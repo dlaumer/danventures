@@ -37,6 +37,21 @@ const Popup: FC<PopupProps & React.ComponentProps<'div'>> = ({
                 </div>
             );
         }
+
+        if (type == 'tracks') {
+            popup = (
+                <div
+                    className={`flex flex-col flex-none justify-between z-30 w-full h-full p-[5px]`}
+                >
+                    <div id="name" className="mb-2">
+                        <div className="font-bold">
+                            {getTranslation('transport') + ': '}
+                        </div>
+                        <div>{data.graphic.attributes['transport']}</div>
+                    </div>
+                </div>
+            );
+        }
         return popup;
     }
 };

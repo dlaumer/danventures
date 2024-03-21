@@ -103,6 +103,16 @@ const translations = {
         fr: 'Liste des couches',
         it: 'Elenco layer',
     },
+    calculateTracks: {
+        en: 'Calculate Tracks',
+    },
+
+    name: {
+        en: 'Name',
+    },
+    transport: {
+        en: 'Transport',
+    },
 };
 
 export default translations;

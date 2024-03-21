@@ -50,7 +50,7 @@ const Header = () => {
                     </div>
                 </div>
                 <Button
-                    titleKey="calculateTracksActive"
+                    titleKey="calculateTracks"
                     onClick={() => dispatch(setCalculateTracksActive(true))}
                     isActive={calculateTracksActive}
                 ></Button>

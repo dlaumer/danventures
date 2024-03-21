@@ -1,7 +1,7 @@
 {
-  "name": "Bioindication",
+  "name": "DanVentures",
   "version": "1.0.0",
-  "description": "Bioindication app for Globe Suisse",
+  "description": "DanVentures hitchhiking trip",
   "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
@@ -19,15 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dlaumer/bioindication.git"
+    "url": "git+https://github.com/dlaumer/danventures.git"
   },
   "keywords": [],
   "author": "Jinnan Zhang",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dlaumer/bioindication/issues"
+    "url": "https://github.com/dlaumer/danventures/issues"
   },
-  "homepage": "https://dlaumer.github.io/bioindication/",
+  "homepage": "https://dlaumer.github.io/danventures/",
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
