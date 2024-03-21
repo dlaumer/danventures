@@ -11,6 +11,9 @@ import { setLocale } from '@arcgis/core/intl';
 
 export type AppState = {
     language?: string;
+
+    calculateTracksActive?: boolean;
+
     webmapId?: string;
     sidePanelContent?: string;
     filterTimeActive?: boolean;
@@ -38,6 +41,9 @@ export type AppState = {
 
 export const initialAppState: AppState = {
     language: 'en',
+
+    calculateTracksActive: false,
+
     webmapId: '67372ff42cd145319639a99152b15bc3',
     sidePanelContent: 'analyze',
     filterTimeActive: true,
@@ -70,6 +76,9 @@ const slice = createSlice({
         setLanguage: (state, action: PayloadAction<string>) => {
             setLocale(action.payload);
             state.language = action.payload;
+        },
+        setCalculateTracksActive: (state, action: PayloadAction<boolean>) => {
+            state.calculateTracksActive = action.payload;
         },
         setSidePanelContent: (state, action: PayloadAction<string>) => {
             state.sidePanelContent = action.payload;
@@ -135,6 +144,7 @@ const { reducer } = slice;
 
 export const {
     webmapIdChanged,
+    setCalculateTracksActive,
     setSidePanelContent,
     setLanguage,
     setFilterTimeActive,

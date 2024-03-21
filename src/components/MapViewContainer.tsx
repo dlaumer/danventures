@@ -13,7 +13,6 @@ const MapViewContainer = () => {
         <div className={'fixed top-0 left-0 w-full h-full'}>
             <Header></Header>
             <MapView />
-            <SidePanel title="chartTitle"></SidePanel>
             <Settings></Settings>
             <MobileInfo></MobileInfo>
             <div id="timeSlider"></div>

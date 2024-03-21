@@ -6,6 +6,10 @@ export const selectWebmapId = createSelector(
     (webmapId) => webmapId
 );
 
+export const selectCalculateTracksActive = createSelector(
+    (state: RootState) => state.App.calculateTracksActive,
+    (calculateTracksActive) => calculateTracksActive
+);
 export const selectLanguage = createSelector(
     (state: RootState) => state.App.language,
     (language) => language
