@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "https://js.arcgis.com/4.28/@arcgis/core/assets/esri/themes/light/main.css";
+@import "@esri/calcite-components/dist/calcite/calcite.css";
+
+
+.esri-ui-inner-container.esri-ui-corner-container {
+    inset: 0px 15px 30px 0px !important
+}
+
+.esri-compass {
+    border-radius: 0 !important
+}
+
+.esri-compass__icon-container {
+    display: flex;
+    justify-content: center;
+}
+.esri-time-slider {
+    min-width: unset;
+}
+
+.esri-distance-measurement-2d {
+    padding: 10px;
+}
+
+.esri-area-measurement-2d {
+    padding: 10px;
+}
+
+.esri-time-slider__mode--time-window .esri-slider__segment-1 {
+    background-color: #A2C367 !important;
+}
+
+.esri-slider__thumb {
+    border: 2px solid #A2C367
+}
+
+.esri-time-slider__time-extent {
+    color: #A2C367
+}
+
+input[type='checkbox'] {
+    accent-color: #7b944d;
+
+}
+
+.esri-print__export-button.esri-button {
+    background-color: #0079c1;
+}
+
+#mobileInfo {
+    display: none;
+}
+
+
+@media only screen and (max-width: 600px) {
+
+    .esri-ui {
+        inset: 70px 10px 10px 10px !important
+    }
+
+    #sidePanel {
+        display: none;
+    }
+
+    #panelButtons {
+        display: none;
+    }
+
+    #settings {
+        width: 350px !important;
+        height: 600px !important;
+        top: calc(50% - 300px) !important;
+        left: calc(50% - 175px) !important;
+    }
+
+    #mobileInfo {
+        display: block;
+    }
+
+    #tooltip {
+        display: none;
+    }
+}
