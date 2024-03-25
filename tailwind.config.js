@@ -16,12 +16,13 @@ module.exports = {
           winered: '#580000',
           backgroundblue: '#C9ECFF',
           midgrey: '#e9e9e9',
-          darkergrey: '#d5d5d5',
+          darkergrey: '#3c3c3c',
           infoPanel: '#ffd900',
           headergreen: '#8dac5665',
           projectgreen: '#A2C367',
           activeBlue: '#6c93ff8b',
-          mainyellow: "#FFD37F"
+          mainyellow: "#FFD37F",
+          lighergray: "#f3f3f3 "
       },
   },
   },

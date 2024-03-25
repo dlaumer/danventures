@@ -59,6 +59,11 @@ export const selectFilterSpaceDrawing = createSelector(
     (filterSpaceDrawing) => filterSpaceDrawing
 );
 
+export const selectGeneralNumbers = createSelector(
+    (state: RootState) => state.App.generalNumbers,
+    (generalNumbers) => generalNumbers
+);
+
 export const selectFeatures = createSelector(
     (state: RootState) => state.App.features,
     (features) => features

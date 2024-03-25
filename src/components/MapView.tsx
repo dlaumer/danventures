@@ -73,6 +73,7 @@ import {
     setFilterTime,
     setFilterTimeEnd,
     setFilterTimeStart,
+    setGeneralNumbers,
     setIsLoggedIn,
     setLogInAttempt,
     setSleepCategories,
@@ -275,7 +276,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             view: view,
             mode: 'cumulative-from-start',
             fullTimeExtent: {
-                start: new Date(2023, 9, 1),
+                start: new Date(2023, 8, 27),
                 end: actualDate,
             },
             timeExtent: {
@@ -423,6 +424,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 // Your logic here, e.g., calling the backend
                 queryDistances(view, tracksLayer);
                 querySleeps(view, locationsLayer);
+                queryGeneralNumbers(view, tracksLayer, locationsLayer);
             };
 
             // Set up a debounced version of your event handler
@@ -436,6 +438,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
             queryDistances(view, tracksLayer);
             querySleeps(view, locationsLayer);
+            queryGeneralNumbers(view, tracksLayer, locationsLayer);
 
             //view.goTo(locationsLayer.fullExtent);
         });
@@ -511,6 +514,113 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     };
 
+    const queryGeneralNumbers = (
+        view: MapView,
+        tracksLayer: FeatureLayer,
+        locationsLayer: FeatureLayer
+    ) => {
+        if (view != null) {
+            const myPromise: Promise<string> = new Promise(
+                (resolve, reject) => {
+                    const promises = [];
+                    const query: any = {
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'sum',
+                                onStatisticField: 'Shape__length',
+                                outStatisticFieldName: 'sumLength',
+                            },
+                        ],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    promises.push(queryLayer(tracksLayer, query));
+
+                    const query2: any = {
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'sum',
+                                onStatisticField: 'noNights',
+                                outStatisticFieldName: 'countSleeps',
+                            },
+                        ],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    promises.push(queryLayer(locationsLayer, query2));
+
+                    const query3: any = {
+                        where: `transport = 'car' OR transport = 'truck' OR transport = 'boat'`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'count',
+                                onStatisticField: 'transport',
+                                outStatisticFieldName: 'countTransports',
+                            },
+                        ],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    promises.push(queryLayer(locationsLayer, query3));
+
+                    const query4: any = {
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outFields: ['travel_date'],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    promises.push(queryLayer(locationsLayer, query4));
+
+                    Promise.all(promises).then((results) => {
+                        const uniqueDays = new Set();
+                        results[3].features.forEach(function (feature: any) {
+                            const dateValue = new Date(
+                                feature.attributes.travel_date
+                            );
+                            const day = dateValue.getDate();
+                            const month = dateValue.getMonth();
+                            const year = dateValue.getFullYear();
+                            const uniqueDate = new Date(year, month, day)
+                                .toISOString()
+                                .split('T')[0]; // Keep only the date part
+                            uniqueDays.add(uniqueDate);
+                        });
+
+                        // Count unique days
+                        const uniqueDaysCount = uniqueDays.size;
+                        const numbers: any = {
+                            totalDistance: Math.round(
+                                (results[0].features[0].attributes[
+                                    'sumLength'
+                                ] *
+                                    0.9144) /
+                                    1000
+                            ),
+                            totalDays:
+                                results[1].features[0].attributes[
+                                    'countSleeps'
+                                ],
+                            totalRides:
+                                results[2].features[0].attributes[
+                                    'countTransports'
+                                ],
+                            totalTravelDays: uniqueDaysCount,
+                        };
+                        dispatch(setGeneralNumbers(numbers));
+                        resolve('Resolved');
+                    });
+                }
+            );
+            return myPromise;
+        }
+    };
+
     const queryDistances = (view: MapView, tracksLayer: FeatureLayer) => {
         if (view != null) {
             const myPromise: Promise<string> = new Promise(
@@ -531,21 +641,10 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         timeExtent: view.timeExtent,
                     };
 
+                    queryLayer(tracksLayer, query).then((result: any) => {
+                        dispatch(setFeatures(result.features));
+                    });
                     // Perform the query on the feature layer
-                    tracksLayer
-                        .queryFeatures(query)
-                        .then(function (result: any) {
-                            if (result.features.length > 0) {
-                                dispatch(setFeatures(result.features));
-                                resolve('Resolved');
-                            } else {
-                                console.log(`Error in querying distances`);
-                                reject('Rejected');
-                            }
-                        })
-                        .catch(function (error: any) {
-                            console.error(`Query failed: `, error);
-                        });
                 }
             );
             return myPromise;
@@ -562,8 +661,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         returnGeometry: false,
                         outStatistics: [
                             {
-                                statisticType: 'count',
-                                onStatisticField: 'sleepCategory',
+                                statisticType: 'sum',
+                                onStatisticField: 'noNights',
                                 outStatisticFieldName: 'countSleeps',
                             },
                         ],
@@ -572,22 +671,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         timeExtent: view.timeExtent,
                     };
 
-                    // Perform the query on the feature layer
-                    locationLayer
-                        .queryFeatures(query)
-                        .then(function (result: any) {
-                            if (result.features.length > 0) {
-                                console.log(result.features);
-                                dispatch(setSleepCategories(result.features));
-                                resolve('Resolved');
-                            } else {
-                                console.log(`Error in querying distances`);
-                                reject('Rejected');
-                            }
-                        })
-                        .catch(function (error: any) {
-                            console.error(`Query failed: `, error);
-                        });
+                    queryLayer(locationLayer, query).then((result: any) => {
+                        dispatch(setSleepCategories(result.features));
+                    });
                 }
             );
             return myPromise;
@@ -606,20 +692,12 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 maxRecordCountFactor: 2,
             };
 
-            // Perform the query on the feature layer
-            locations
-                .queryFeatures(query)
-                .then(function (result: any) {
-                    if (result.features.length > 0) {
-                        calculateTracks(result.features);
-                        dispatch(setCalculateTracksActive(false));
-                    } else {
-                        console.log(`No data found`);
-                        dispatch(setCalculateTracksActive(false));
-                    }
+            queryLayer(locations, query)
+                .then((result: any) => {
+                    calculateTracks(result.features);
+                    dispatch(setCalculateTracksActive(false));
                 })
-                .catch(function (error: any) {
-                    console.error(`Query failed: `, error);
+                .catch((error: any) => {
                     dispatch(setCalculateTracksActive(false));
                 });
         }
@@ -666,6 +744,27 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         });
 
         return myPromise;
+    };
+
+    const queryLayer: any = (layer: FeatureLayer, query: Query) => {
+        const promise: Promise<string> = new Promise((resolve, reject) => {
+            // Perform the query on the feature layer
+            layer
+                .queryFeatures(query)
+                .then(function (result: any) {
+                    if (result.features.length > 0) {
+                        resolve(result);
+                    } else {
+                        console.log(`No data found`);
+                        reject();
+                    }
+                })
+                .catch(function (error: any) {
+                    console.error(`Query failed: `, error);
+                    reject();
+                });
+        });
+        return promise;
     };
 
     const debounce = (func: any, delay: any) => {

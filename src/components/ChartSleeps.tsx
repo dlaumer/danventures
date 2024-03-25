@@ -1,6 +1,10 @@
 import { getTranslation, getTranslationStatic } from '@services/languageHelper';
 import { setHoverFeatures } from '@store/reducer';
-import { selectAttribute, selectFeatures } from '@store/selectors';
+import {
+    selectAttribute,
+    selectFeatures,
+    selectSleepCategories,
+} from '@store/selectors';
 import React, { FC, PureComponent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -21,14 +25,14 @@ import {
 type ChartProps = {
     title?: string;
 };
-const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
+const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     title = 'Default',
     ...props
 }) => {
     const dispatch = useDispatch();
-    const features = useSelector(selectFeatures);
-    const attribute: string = 'sumLength';
-    const categories: string = 'transport';
+    const features = useSelector(selectSleepCategories);
+    const attribute: string = 'countSleeps';
+    const categories: string = 'sleepCategory';
     const [data, setData] = useState<any>(null);
     const [dataFinancial, setDataFinancial] = useState<any>(null);
 
@@ -51,27 +55,24 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 features[i].attributes[categories] != null &&
                 features[i].attributes[categories] != ''
             ) {
-                const value = Math.round(
-                    (features[i].attributes[attribute] * 0.9144) / 1000
-                );
                 dataTemp.push({
                     name: getTranslationStatic(
                         features[i].attributes[categories]
                     ),
-                    value: value,
+                    value: features[i].attributes[attribute],
                 });
                 if (
-                    features[i].attributes[categories] == 'car' ||
-                    features[i].attributes[categories] == 'truck' ||
+                    features[i].attributes[categories] == 'camping' ||
                     features[i].attributes[categories] == 'boat' ||
-                    features[i].attributes[categories] == 'foot'
+                    features[i].attributes[categories] == 'house' ||
+                    features[i].attributes[categories] == 'couchsurfing'
                 ) {
-                    free += value;
+                    free += features[i].attributes[attribute];
                 } else if (
-                    features[i].attributes[categories] == 'bus' ||
-                    features[i].attributes[categories] == 'ferry'
+                    features[i].attributes[categories] == 'airbnb' ||
+                    features[i].attributes[categories] == 'hostel'
                 ) {
-                    paid += value;
+                    paid += features[i].attributes[attribute];
                 }
             }
         }
@@ -85,9 +86,9 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     return (
         <div className="w-1/2 h-full">
             <div className="h-[10%] w-full text-base font-bold flex items-center">
-                {getTranslation('transportation')}
+                {getTranslation('accomodation')}
             </div>
-            <div id="chart1" className="h-[45%] w-full p-[5px]">
+            <div id="chart3" className="h-[45%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -121,7 +122,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     </ResponsiveContainer>
                 </div>
             </div>
-            <div id="chart2" className="h-[45%] w-full p-[5px]">
+            <div id="chart4" className="h-[45%] w-full p-[10px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -158,4 +159,4 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
         </div>
     );
 };
-export default ChartDistance;
+export default ChartSleeps;

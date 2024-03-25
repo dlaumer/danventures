@@ -27,6 +27,7 @@ export type AppState = {
     filterSpace?: any;
     filterSpaceDrawing?: boolean;
 
+    generalNumbers?: any;
     features?: any;
     attribute?: string;
     hoverFeatures?: any;
@@ -57,6 +58,13 @@ export const initialAppState: AppState = {
 
     filterSpace: [],
     filterSpaceDrawing: false,
+
+    generalNumbers: {
+        totalDistance: 0,
+        totalDays: 0,
+        totalRides: 0,
+        totalTravelDays: 0,
+    },
 
     features: null,
     attribute: null,
@@ -115,6 +123,9 @@ const slice = createSlice({
         setFilterSpaceDrawing: (state, action: PayloadAction<boolean>) => {
             state.filterSpaceDrawing = action.payload;
         },
+        setGeneralNumbers: (state, action: PayloadAction<any>) => {
+            state.generalNumbers = action.payload;
+        },
         setFeatures: (state, action: PayloadAction<any>) => {
             state.features = action.payload;
         },
@@ -161,6 +172,7 @@ export const {
     addFilterSpace,
     setFilterSpace,
     setFilterSpaceDrawing,
+    setGeneralNumbers,
     setFeatures,
     setSleepCategories,
     setAttribute,

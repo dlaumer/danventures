@@ -119,6 +119,27 @@ const translations = {
     selectPeriod: {
         en: 'Select Period',
     },
+    totalDistance: {
+        en: 'Total Distance',
+    },
+    totalDays: {
+        en: 'Total Days',
+    },
+    totalRides: {
+        en: 'No. of Rides',
+    },
+    totalTravelDays: {
+        en: 'Travel Days',
+    },
+    days: {
+        en: 'days',
+    },
+    transportation: {
+        en: 'Transportation',
+    },
+    accomodation: {
+        en: 'Accomodation',
+    },
 };
 
 export default translations;
