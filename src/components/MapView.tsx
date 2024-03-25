@@ -43,6 +43,7 @@ import * as route from '@arcgis/core/rest/route';
 import FeatureSet from '@arcgis/core/rest/support/FeatureSet';
 import RouteParameters from '@arcgis/core/rest/support/RouteParameters';
 import Graphic from '@arcgis/core/Graphic';
+import Polyline from '@arcgis/core/geometry/Polyline';
 
 import {
     selectAttribute,
@@ -74,6 +75,7 @@ import {
     setFilterTimeStart,
     setIsLoggedIn,
     setLogInAttempt,
+    setSleepCategories,
     setUsernameEsri,
 } from '@store/reducer';
 import { getTranslation, getTranslationStatic } from '@services/languageHelper';
@@ -150,7 +152,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         });
 
         const templateTracks = new PopupTemplate({
-            title: '{indexFrom} - {indexTo}',
+            title: '{nameFrom} - {nameTo}',
             content: setContentInfoTracks,
         });
         // The view instance is the most important instance for ArcGIS, from here you can access almost all elements like layers, ui elements, widget, etc
@@ -186,13 +188,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     symbol: {
                         type: 'simple-marker', // autocasts as new SimpleMarkerSymbol()
                         style: 'circle',
-                        size: 10, // pixels
+                        size: 3, // pixels
                         outline: {
                             // autocasts as new SimpleLineSymbol()
                             color: [153, 153, 153, 64],
-                            width: 0.75, // points
+                            width: 0.5, // points
                         },
-                        color: [0, 197, 255, 255],
+                        color: [155, 0, 0, 255],
                     },
                 },
                 {
@@ -201,13 +203,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     symbol: {
                         type: 'simple-marker', // autocasts as new SimpleMarkerSymbol()
                         style: 'circle',
-                        size: 15, // pixels
+                        size: 10, // pixels
                         outline: {
                             // autocasts as new SimpleLineSymbol()
                             color: [153, 153, 153, 64],
                             width: 0.75, // points
                         },
-                        color: [85, 255, 0, 255],
+                        color: [255, 255, 0, 255],
                     },
                 },
             ],
@@ -247,7 +249,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             portalItem: {
                 id: tracksId,
             },
-            renderer: rendererTracks,
+            //renderer: rendererTracks,
             outFields: ['*'],
         });
 
@@ -257,7 +259,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             portalItem: {
                 id: locationsId,
             },
-            renderer: rendererLocations,
+            //renderer: rendererLocations,
             outFields: ['*'],
         });
 
@@ -266,18 +268,18 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         setLocations(locationsLayer);
         setTracks(tracksLayer);
 
-        locationsLayer.popupTemplate = templateLocations;
-        tracksLayer.popupTemplate = templateTracks;
+        //locationsLayer.popupTemplate = templateLocations;
+        //tracksLayer.popupTemplate = templateTracks;
 
         const slider = new TimeSlider({
             view: view,
-            mode: 'time-window',
+            mode: 'cumulative-from-start',
             fullTimeExtent: {
-                start: new Date(2000, 1, 1),
+                start: new Date(2023, 9, 1),
                 end: actualDate,
             },
             timeExtent: {
-                start: new Date(2000, 1, 1),
+                start: null,
                 end: actualDate,
             },
             stops: {
@@ -403,9 +405,42 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         view.when(() => {
             setMapView(view);
+            slider.container = 'filterTimeContainer';
+
+            slider.when(() => {
+                const timeSliderFooter = document.getElementsByClassName(
+                    'esri-time-slider__min'
+                )[0].parentNode;
+                (timeSliderFooter as HTMLElement).style.display = 'none';
+                document.getElementById('filterTimeContainer').onclick =
+                    function (event) {
+                        event.stopPropagation();
+                    };
+            });
+
+            // Your event handler function
+            const handleSliderChange = (value: any) => {
+                // Your logic here, e.g., calling the backend
+                queryDistances(view, tracksLayer);
+                querySleeps(view, locationsLayer);
+            };
+
+            // Set up a debounced version of your event handler
+            const debouncedSliderHandler = debounce(handleSliderChange, 500); // Adjust the delay as needed (500 milliseconds in this example)
+
+            slider.watch('timeExtent', (value: any) => {
+                // update layer view filter to reflect current timeExtent
+                debouncedSliderHandler(value.start);
+                debouncedSliderHandler(value.end);
+            });
+
+            queryDistances(view, tracksLayer);
+            querySleeps(view, locationsLayer);
+
             //view.goTo(locationsLayer.fullExtent);
         });
 
+        reactiveUtils.whenOnce(() => !view.updating).then(() => {});
         // Function block the UI while the map is loading!
     };
 
@@ -439,7 +474,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         return container;
     };
 
-    const queryTracks = (from: string, to: string, view: MapView) => {
+    const checkTracks = (from: string, to: string, view: MapView) => {
         if (view != null) {
             const myPromise: Promise<string> = new Promise(
                 (resolve, reject) => {
@@ -465,6 +500,89 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                             } else {
                                 console.log(`Track does not exist`);
                                 resolve('Resolved');
+                            }
+                        })
+                        .catch(function (error: any) {
+                            console.error(`Query failed: `, error);
+                        });
+                }
+            );
+            return myPromise;
+        }
+    };
+
+    const queryDistances = (view: MapView, tracksLayer: FeatureLayer) => {
+        if (view != null) {
+            const myPromise: Promise<string> = new Promise(
+                (resolve, reject) => {
+                    const query: any = {
+                        //where: `EXTRACT(MONTH FROM ${layer.timeInfo.startField}) = ${month}`,
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'sum',
+                                onStatisticField: 'Shape__length',
+                                outStatisticFieldName: 'sumLength',
+                            },
+                        ],
+                        groupByFieldsForStatistics: [`transport`],
+                        orderByFields: [`sumLength DESC`],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    // Perform the query on the feature layer
+                    tracksLayer
+                        .queryFeatures(query)
+                        .then(function (result: any) {
+                            if (result.features.length > 0) {
+                                dispatch(setFeatures(result.features));
+                                resolve('Resolved');
+                            } else {
+                                console.log(`Error in querying distances`);
+                                reject('Rejected');
+                            }
+                        })
+                        .catch(function (error: any) {
+                            console.error(`Query failed: `, error);
+                        });
+                }
+            );
+            return myPromise;
+        }
+    };
+
+    const querySleeps = (view: MapView, locationLayer: FeatureLayer) => {
+        if (view != null) {
+            const myPromise: Promise<string> = new Promise(
+                (resolve, reject) => {
+                    const query: any = {
+                        //where: `EXTRACT(MONTH FROM ${layer.timeInfo.startField}) = ${month}`,
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'count',
+                                onStatisticField: 'sleepCategory',
+                                outStatisticFieldName: 'countSleeps',
+                            },
+                        ],
+                        groupByFieldsForStatistics: [`sleepCategory`],
+                        orderByFields: [`countSleeps DESC`],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    // Perform the query on the feature layer
+                    locationLayer
+                        .queryFeatures(query)
+                        .then(function (result: any) {
+                            if (result.features.length > 0) {
+                                console.log(result.features);
+                                dispatch(setSleepCategories(result.features));
+                                resolve('Resolved');
+                            } else {
+                                console.log(`Error in querying distances`);
+                                reject('Rejected');
                             }
                         })
                         .catch(function (error: any) {
@@ -507,13 +625,22 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     };
 
-    const addTrack = (from: string, to: string, track: any) => {
+    const addTrack = (from: any, to: any, track: any) => {
         const myPromise: Promise<string> = new Promise((resolve, reject) => {
-            const attributes = {
-                indexFrom: from,
-                indexTo: to,
-                transport: 'car',
+            const attributes: any = {
+                indexFrom: from.attributes.travel_date,
+                indexTo: to.attributes.travel_date,
+                transport: to.attributes.transport,
+                nameFrom: from.attributes.name,
+                nameTo: to.attributes.name,
+                travel_date: to.attributes.travel_date,
+                boat: to.attributes.boat,
             };
+
+            if (to.attributes.category != 'sleep') {
+                attributes['people'] = to.attributes.people;
+                attributes['description'] = to.attributes.description;
+            }
 
             const addFeature = new Graphic({
                 geometry: track,
@@ -541,12 +668,24 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         return myPromise;
     };
 
+    const debounce = (func: any, delay: any) => {
+        let timeoutId: any;
+
+        return function (...args: any) {
+            clearTimeout(timeoutId);
+
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    };
+
     const calculateTracks = (features: any) => {
         const locData: any = {};
         for (const i in features) {
             console.log(features[i]);
-            const seq = features[i].attributes.sequence;
-            locData[seq] = {
+            const date = features[i].attributes.travel_date;
+            locData[date] = {
                 attributes: features[i].attributes,
                 geometry: features[i].geometry,
             };
@@ -560,7 +699,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             const indexNext = seq[i + 1];
 
             // Check if this route already exists:
-            queryTracks(index, indexNext, mapView).then(() => {
+            checkTracks(index, indexNext, mapView).then(() => {
                 // Setup the route parameters
                 const routeParams = new RouteParameters({
                     // An authorization string used to access the routing service
@@ -577,15 +716,43 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     }),
                 });
 
-                route.solve(routeUrl, routeParams).then((data) => {
-                    const routeResult: any = data.routeResults[0].route;
+                if (
+                    locData[indexNext].attributes.transport == 'car' ||
+                    locData[indexNext].attributes.transport == 'car' ||
+                    locData[indexNext].attributes.transport == 'bus'
+                ) {
+                    route.solve(routeUrl, routeParams).then((data) => {
+                        const routeResult: any = data.routeResults[0].route;
 
-                    addTrack(index, indexNext, routeResult.geometry).then(
-                        () => {
+                        addTrack(
+                            locData[index],
+                            locData[indexNext],
+                            routeResult.geometry
+                        ).then(() => {
                             console.log('Track added!');
-                        }
-                    );
-                });
+                        });
+                    });
+                } else {
+                    const directTrack = new Polyline({
+                        paths: [
+                            [
+                                locData[index].geometry.longitude,
+                                locData[index].geometry.latitude,
+                            ],
+                            [
+                                locData[indexNext].geometry.longitude,
+                                locData[indexNext].geometry.latitude,
+                            ],
+                        ],
+                    });
+                    addTrack(
+                        locData[index],
+                        locData[indexNext],
+                        directTrack
+                    ).then(() => {
+                        console.log('Track added!');
+                    });
+                }
             });
         }
     };
@@ -608,7 +775,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         <>
             <div
                 style={{
-                    width: '100%',
+                    width: '50%',
                     height: '100%',
                     backgroundColor: 'grey',
                 }}

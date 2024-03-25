@@ -113,6 +113,12 @@ const translations = {
     transport: {
         en: 'Transport',
     },
+    filterTopicTitle: {
+        en: 'Charts',
+    },
+    selectPeriod: {
+        en: 'Select Period',
+    },
 };
 
 export default translations;

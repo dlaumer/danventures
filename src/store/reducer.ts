@@ -30,6 +30,7 @@ export type AppState = {
     features?: any;
     attribute?: string;
     hoverFeatures?: any;
+    sleepCategories?: any;
 
     isLoggedIn?: boolean;
     logInAttempt?: boolean;
@@ -60,6 +61,7 @@ export const initialAppState: AppState = {
     features: null,
     attribute: null,
     hoverFeatures: null,
+    sleepCategories: null,
 
     isLoggedIn: false,
     logInAttempt: false,
@@ -116,6 +118,9 @@ const slice = createSlice({
         setFeatures: (state, action: PayloadAction<any>) => {
             state.features = action.payload;
         },
+        setSleepCategories: (state, action: PayloadAction<any>) => {
+            state.sleepCategories = action.payload;
+        },
         setAttribute: (state, action: PayloadAction<string>) => {
             state.attribute = action.payload;
         },
@@ -157,6 +162,7 @@ export const {
     setFilterSpace,
     setFilterSpaceDrawing,
     setFeatures,
+    setSleepCategories,
     setAttribute,
     setHoverFeatures,
     setIsLoggedIn,

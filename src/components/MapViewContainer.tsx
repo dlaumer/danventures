@@ -12,7 +12,10 @@ const MapViewContainer = () => {
     return (
         <div className={'fixed top-0 left-0 w-full h-full'}>
             <Header></Header>
-            <MapView />
+            <div className="flex w-full h-[calc(100%-60px)]">
+                <SidePanel title="chartTitle"></SidePanel>
+                <MapView />
+            </div>
             <Settings></Settings>
             <MobileInfo></MobileInfo>
             <div id="timeSlider"></div>

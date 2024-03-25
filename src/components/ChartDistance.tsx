@@ -18,62 +18,17 @@ import {
     Rectangle,
 } from 'recharts';
 
-const exampleData = [
-    {
-        name: 'Page A',
-        uv: 4000,
-        pv: 2400,
-        amt: 2400,
-    },
-    {
-        name: 'Page B',
-        uv: 3000,
-        pv: 1398,
-        amt: 2210,
-    },
-    {
-        name: 'Page C',
-        uv: 2000,
-        pv: 9800,
-        amt: 2290,
-    },
-    {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-        amt: 2000,
-    },
-    {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-        amt: 2181,
-    },
-    {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-        amt: 2500,
-    },
-    {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-        amt: 2100,
-    },
-];
-
 type ChartProps = {
     title?: string;
 };
-const Chart: FC<ChartProps & React.ComponentProps<'button'>> = ({
+const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     title = 'Default',
     ...props
 }) => {
     const dispatch = useDispatch();
     const features = useSelector(selectFeatures);
-    const attribute = useSelector(selectAttribute);
-
+    const attribute: string = 'sumLength';
+    const categories: string = 'transport';
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
@@ -90,16 +45,18 @@ const Chart: FC<ChartProps & React.ComponentProps<'button'>> = ({
         const dataTemp = [];
         for (const i in features) {
             if (
-                features[i].attributes[attribute] != null &&
-                features[i].attributes[attribute] != ''
+                features[i].attributes[categories] != null &&
+                features[i].attributes[categories] != ''
             ) {
                 dataTemp.push({
                     name: getTranslationStatic(
-                        features[i].attributes[attribute]
+                        features[i].attributes[categories]
                     ),
                     value:
                         Math.round(
-                            features[i].attributes.count_Attribute * 100
+                            ((features[i].attributes[attribute] * 0.9144) /
+                                1000) *
+                                100
                         ) / 100,
                 });
             }
@@ -124,17 +81,17 @@ const Chart: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 <Tooltip />
                 <Bar
                     dataKey="value"
-                    fill="#A2C367"
+                    fill="#FFD37F"
                     onMouseOver={(event) => {
                         dispatch(setHoverFeatures(event.name));
                     }}
                     onMouseOut={(event) => {
                         dispatch(setHoverFeatures(null));
                     }}
-                    activeBar={<Rectangle fill="#79924e" />}
+                    activeBar={<Rectangle fill="#febc42" />}
                 />
             </BarChart>
         </ResponsiveContainer>
     );
 };
-export default Chart;
+export default ChartDistance;

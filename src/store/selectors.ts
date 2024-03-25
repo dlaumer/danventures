@@ -64,6 +64,11 @@ export const selectFeatures = createSelector(
     (features) => features
 );
 
+export const selectSleepCategories = createSelector(
+    (state: RootState) => state.App.sleepCategories,
+    (sleepCategories) => sleepCategories
+);
+
 export const selectAttribute = createSelector(
     (state: RootState) => state.App.attribute,
     (attribute) => attribute

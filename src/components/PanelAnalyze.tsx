@@ -25,7 +25,7 @@ import {
 } from '@store/selectors';
 import Dropdown from './Dropdown';
 import Button from './Button';
-import Chart from './Chart';
+import ChartDistance from './ChartDistance';
 
 import penTool from './../constants/pen-tool.svg';
 import clock from './../constants/clock.svg';
@@ -54,112 +54,6 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
             className={`flex flex-col flex-none z-30 w-full  h-full bg-white p-[5px]`}
         >
             <div
-                id="filterTime"
-                className={`rounded-xl w-full p-[5px] my-[2.5px] bg-backgroundgray  ${
-                    filterTimeActive ? '' : 'opacity-50'
-                }`}
-            >
-                <div className="flex items-center justify-between ">
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="checkboxTime"
-                            checked={filterTimeActive ? true : false}
-                            className="w-[15px] h-[15px] m-[10px]"
-                            onChange={() => {
-                                dispatch(setFilterTimeActive());
-                            }}
-                        />
-
-                        <div className="h-full flex items-center">
-                            <img
-                                src={clock}
-                                className="h-[20px] px-[10px]"
-                            ></img>
-                            <div id="filterTimeTitle" className="font-bold">
-                                {getTranslation('selectPeriod')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        id="filterTimeClear"
-                        className={`${
-                            !filterTimeActive
-                                ? 'cursor-not-allowed opacity-50'
-                                : 'cursor-pointer'
-                        }`}
-                        onClick={(event: any) => {
-                            dispatch(setFilterTimeStart(null));
-                            dispatch(setFilterTimeEnd(null));
-                            event.stopPropagation();
-                        }}
-                    >
-                        {getTranslation('clear')}
-                    </button>
-                </div>
-                <div id="filterTimeContainer"></div>
-            </div>
-            <div
-                id="filterSpace"
-                className={`rounded-xl w-full p-[5px] my-[2.5px] bg-backgroundgray ${
-                    filterSpaceActive ? '' : 'opacity-50'
-                }`}
-            >
-                <div className="flex items-center justify-between ">
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="checkboxTime"
-                            checked={filterSpaceActive ? true : false}
-                            className="w-[15px] h-[15px] m-[10px]"
-                            onChange={() => {
-                                dispatch(setFilterSpaceActive());
-                            }}
-                        />
-
-                        <div className="h-full flex items-center">
-                            <img
-                                src={crop}
-                                className="h-[20px] px-[10px]"
-                            ></img>
-                            <div id="filterSpaceTitle" className="font-bold">
-                                {getTranslation('selectArea')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center">
-                        <Button
-                            icon={penTool}
-                            title=""
-                            onClick={(event: any) => {
-                                dispatch(
-                                    setFilterSpaceDrawing(!filterSpaceDrawing)
-                                );
-                                event.stopPropagation();
-                            }}
-                            isActive={!filterSpaceDrawing}
-                            isDisabled={!filterSpaceActive}
-                        ></Button>
-                        <button
-                            id="filterSpaceClear"
-                            className={`mx-[10px] ${
-                                !filterSpaceActive
-                                    ? 'cursor-not-allowed opacity-50'
-                                    : 'cursor-pointer'
-                            }`}
-                            onClick={(event: any) => {
-                                dispatch(setFilterSpace(null));
-                                event.stopPropagation();
-                            }}
-                        >
-                            {getTranslation('clear')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div
                 id="filterChart"
                 className="flex-1 rounded-xl w-full p-[5px] my-[2.5px] bg-backgroundgray overflow-auto"
             >
@@ -170,13 +64,31 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                             {getTranslation('filterTopicTitle')}
                         </div>
                     </div>
-
-                    <Dropdown
-                        tag="categories"
-                        options={['bioQuality', 'waterQuality', 'waterToBio']}
-                    />
                 </div>
-                <Chart />
+                <div className="w-full h-1/2">
+                    <div id="chart1" className="h-full w-1/2">
+                        <ChartDistance />
+                    </div>
+                    <div id="chart2" className="h-full w-1/2"></div>
+                </div>
+                <div className="w-full h-1/2">
+                    <div id="chart3" className="h-full w-1/2"></div>
+                    <div id="chart4" className="h-full w-1/2"></div>
+                </div>
+            </div>
+            <div
+                id="filterTime"
+                className={`rounded-xl w-full p-[5px] my-[2.5px] bg-backgroundgray `}
+            >
+                <div className="flex items-center justify-between ">
+                    <div className="h-full flex items-center">
+                        <img src={clock} className="h-[20px] px-[10px]"></img>
+                        <div id="filterTimeTitle" className="font-bold">
+                            {getTranslation('selectPeriod')}
+                        </div>
+                    </div>
+                </div>
+                <div id="filterTimeContainer"></div>
             </div>
         </div>
     );

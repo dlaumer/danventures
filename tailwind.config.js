@@ -20,7 +20,8 @@ module.exports = {
           infoPanel: '#ffd900',
           headergreen: '#8dac5665',
           projectgreen: '#A2C367',
-          activeBlue: '#6c93ff8b'
+          activeBlue: '#6c93ff8b',
+          mainyellow: "#FFD37F"
       },
   },
   },
