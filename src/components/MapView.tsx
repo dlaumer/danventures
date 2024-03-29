@@ -161,9 +161,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             popupEnabled: true,
             container: mapDivRef.current,
             map: map,
-            padding: {
-                top: 70,
-            },
             center: [-10, 30],
             zoom: 4,
         });
@@ -873,6 +870,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
     return (
         <>
             <div
+                id="mapContainer"
                 style={{
                     width: '50%',
                     height: '100%',

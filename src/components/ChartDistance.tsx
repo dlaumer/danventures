@@ -83,7 +83,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     };
 
     return (
-        <div className="w-1/2 h-full">
+        <div className="w-1/2 h-full chartsContainer2">
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('transportation')}
             </div>

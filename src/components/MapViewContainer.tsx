@@ -17,7 +17,6 @@ const MapViewContainer = () => {
                 <MapView />
             </div>
             <Settings></Settings>
-            <MobileInfo></MobileInfo>
             <div id="timeSlider"></div>
         </div>
     );

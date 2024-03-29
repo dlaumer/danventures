@@ -48,8 +48,21 @@ const SidePanel: FC<React.ComponentProps<'div'>> = () => {
         <div
             key="sidePanel"
             id="sidePanel"
-            className={`rounded-xl flex flex-col flex-none justify-between z-30 w-1/2  h-full bg-white`}
+            className={`rounded-xl flex flex-col flex-none justify-between z-30 w-1/2  h-full bg-backgroundgray`}
         >
+            <div
+                id="handle"
+                className="w-full h-[15px] flex items-center justify-center bg-backgroundgray rounded-xl"
+            >
+                <div
+                    className="bg-white w-[70%] h-[5px] rounded-[0.75rem]"
+                    onClick={() => {
+                        document
+                            .getElementById('sidePanel')
+                            .classList.toggle('sidePanelUp');
+                    }}
+                ></div>
+            </div>
             {content}
         </div>
     );

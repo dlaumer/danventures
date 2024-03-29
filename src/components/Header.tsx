@@ -40,7 +40,10 @@ const Header = () => {
             id="header"
             className="flex flex-row flex-none justify-between z-30 w-full h-[60px] py-1 bg-mainyellow px-[15px]"
         >
-            <div className="h-full flex items-center gap-2 mr-4 font-noigrotesk">
+            <div
+                id="titleContainer"
+                className="h-full flex items-center gap-2 mr-4 font-noigrotesk"
+            >
                 <div className="leading-snug text-xl font-bold">
                     {getTranslation('title')}
                 </div>

@@ -117,7 +117,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                 className="flex-1 w-full p-[5px] my-[2.5px]  overflow-auto"
             >
                 {numbersDashboard}
-                <div className="flex h-4/5 w-full">
+                <div id="chartsContainer" className="flex h-4/5 w-full">
                     <ChartDistance />
                     <ChartSleeps />
                 </div>
