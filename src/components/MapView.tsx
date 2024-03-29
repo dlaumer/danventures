@@ -104,6 +104,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     const language = useSelector(selectLanguage);
     const calculateTracksActive = useSelector(selectCalculateTracksActive);
+    const hoverFeatures = useSelector(selectHoverFeatures);
+    const attribute = useSelector(selectAttribute);
 
     const [locations, setLocations] = useState<FeatureLayer>(null);
     const [sleeps, setSleeps] = useState<FeatureLayer>(null);
@@ -966,6 +968,47 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             isInitalizing = true;
         }
     }, []);
+
+    useEffect(() => {
+        if (mapView != null && locations != null && tracks != null) {
+            if (hoverFeatures == null) {
+                locations.featureEffect = null;
+                tracks.featureEffect = null;
+                sleeps.featureEffect = null;
+            } else {
+                const filter = new FeatureFilter({});
+                if (mapView.timeExtent != null) {
+                    filter.timeExtent = mapView.timeExtent;
+                    if (hoverFeatures != null) {
+                        filter.where = attribute + " = '" + hoverFeatures + "'";
+                    }
+
+                    if (attribute == 'transport') {
+                        tracks.featureEffect = new FeatureEffect({
+                            filter: filter,
+                            excludedEffect: 'grayscale(100%) opacity(70%)',
+                            includedEffect:
+                                'saturate(150%) drop-shadow(0, 0px, 12px)',
+                        });
+                    } else if (attribute == 'sleepCategory') {
+                        locations.featureEffect = new FeatureEffect({
+                            filter: filter,
+                            excludedEffect: 'grayscale(100%) opacity(70%)',
+                            includedEffect:
+                                'saturate(150%) drop-shadow(0, 0px, 12px)',
+                        });
+
+                        sleeps.featureEffect = new FeatureEffect({
+                            filter: filter,
+                            excludedEffect: 'grayscale(100%) opacity(70%)',
+                            includedEffect:
+                                'saturate(150%) drop-shadow(0, 0px, 12px)',
+                        });
+                    }
+                }
+            }
+        }
+    }, [hoverFeatures]);
 
     return (
         <>

@@ -1,5 +1,5 @@
 import { getTranslation, getTranslationStatic } from '@services/languageHelper';
-import { setHoverFeatures } from '@store/reducer';
+import { setAttribute, setHoverFeatures } from '@store/reducer';
 import { selectAttribute, selectFeatures } from '@store/selectors';
 import React, { FC, PureComponent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -110,6 +110,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 dataKey="value"
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
+                                    dispatch(setAttribute(categories));
                                     dispatch(setHoverFeatures(event.name));
                                 }}
                                 onMouseOut={(event) => {
