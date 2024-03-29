@@ -28,21 +28,6 @@ const SidePanel: FC<React.ComponentProps<'div'>> = () => {
 
     //const [content, setContent] = useState(null);
 
-    const content: any = [];
-    content.push(
-        <div
-            key="analyze"
-            className={`${
-                sidePanelContent == 'analyze' ? '' : 'hidden'
-            } h-full`}
-        >
-            <PanelAnalyze
-                active={sidePanelContent == 'analyze'}
-                title="analyzeTitle"
-            ></PanelAnalyze>
-        </div>
-    );
-
     // UI part
     return (
         <div
@@ -50,20 +35,13 @@ const SidePanel: FC<React.ComponentProps<'div'>> = () => {
             id="sidePanel"
             className={`rounded-xl flex flex-col flex-none justify-between z-30 w-1/2  h-full bg-backgroundgray`}
         >
-            <div
-                id="handle"
-                className="w-full h-[15px] flex items-center justify-center bg-backgroundgray rounded-xl"
-            >
-                <div
-                    className="bg-white w-[70%] h-[5px] rounded-[0.75rem]"
-                    onClick={() => {
-                        document
-                            .getElementById('sidePanel')
-                            .classList.toggle('sidePanelUp');
-                    }}
-                ></div>
+            <PanelAnalyze
+                active={sidePanelContent == 'analyze'}
+                title="analyzeTitle"
+            ></PanelAnalyze>
+            <div id="filterTime" className={`w-full p-[5px] my-[2.5px]`}>
+                <div id="filterTimeContainer"></div>
             </div>
-            {content}
         </div>
     );
 };

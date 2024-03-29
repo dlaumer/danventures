@@ -110,8 +110,21 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
     return (
         <div
             id="analyze"
-            className={`flex flex-col flex-none z-30 w-full bg-backgroundgray h-full`}
+            className={`flex grow flex-col flex-none z-30 w-full bg-backgroundgray`}
         >
+            <div
+                id="handle"
+                className="w-full h-[19px] flex items-center justify-center bg-backgroundgray rounded-xl"
+            >
+                <div
+                    className="bg-white w-[70%] h-[7px] rounded-[0.75rem] m-[5px]"
+                    onClick={() => {
+                        document
+                            .getElementById('analyze')
+                            .classList.toggle('sidePanelUp');
+                    }}
+                ></div>
+            </div>
             <div
                 id="filterChart"
                 className="flex-1 w-full p-[5px] my-[2.5px]  overflow-auto"
@@ -121,9 +134,6 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <ChartDistance />
                     <ChartSleeps />
                 </div>
-            </div>
-            <div id="filterTime" className={`w-full p-[5px] my-[2.5px]`}>
-                <div id="filterTimeContainer"></div>
             </div>
         </div>
     );
