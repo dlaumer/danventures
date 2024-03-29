@@ -329,7 +329,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             //renderer: rendererTracks,
             outFields: ['*'],
             title: getTranslationStatic('tracks'),
-            editingEnabled: false,
         });
 
         view.map.add(tracksLayer);
@@ -356,7 +355,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             definitionExpression: "pointType = 'sleep'",
             popupEnabled: true,
             title: getTranslationStatic('sleeps'),
-            editingEnabled: false,
+            formTemplate: formTemplate,
         });
 
         view.map.add(sleepsLayer);
@@ -635,7 +634,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     promises.push(queryLayer(tracksLayer, query));
 
                     const query2: any = {
-                        where: `1=1`,
+                        where: `pointType = 'sleep'`,
                         returnGeometry: false,
                         outStatistics: [
                             {
@@ -811,12 +810,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 boat: to.attributes.boat,
             };
 
-            if (to.attributes.pointType != 'sleep') {
-                attributes['people'] = to.attributes.people;
-                attributes['description'] = to.attributes.description;
-            } else {
-                console.log('Wuhu');
-            }
+            attributes['people'] = to.attributes.people;
+            attributes['description'] = to.attributes.description;
 
             const addFeature = new Graphic({
                 geometry: track,

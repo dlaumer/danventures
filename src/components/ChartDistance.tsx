@@ -16,6 +16,7 @@ import {
     BarChart,
     Bar,
     Rectangle,
+    Cell,
 } from 'recharts';
 
 type ChartProps = {
@@ -35,6 +36,16 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     useEffect(() => {
         parseData(features);
     }, [features]);
+
+    const colors: any = {
+        car: '#73B2FF',
+        truck: '#73DFFF',
+        boat: '#FF7F7F',
+        bus: '#A7C636',
+        ferry: '#FFAA00',
+        foot: '#C500FF',
+        rentalCar: '#FFFF00',
+    };
 
     const tickFormatter = (value: string, index: number) => {
         const limit = 10; // put your maximum character
@@ -108,7 +119,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                             <Tooltip />
                             <Bar
                                 dataKey="value"
-                                fill="#FFD37F"
+                                fill="#000000"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(setHoverFeatures(event.name));
@@ -116,8 +127,14 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                                activeBar={<Rectangle fill="#febc42" />}
-                            />
+                            >
+                                {data?.map((entry: any, index: any) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={colors[entry.name]}
+                                    />
+                                ))}
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
