@@ -140,6 +140,21 @@ const translations = {
     accomodation: {
         en: 'Accomodation',
     },
+    locations: {
+        en: 'Locations',
+    },
+    sleeps: {
+        en: 'Sleeping spots',
+    },
+    tracks: {
+        en: 'Tracks',
+    },
+    category: {
+        en: 'Category',
+    },
+    sleepCategory: {
+        en: 'Sleep category',
+    },
 };
 
 export default translations;

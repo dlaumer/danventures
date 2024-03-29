@@ -44,6 +44,8 @@ import FeatureSet from '@arcgis/core/rest/support/FeatureSet';
 import RouteParameters from '@arcgis/core/rest/support/RouteParameters';
 import Graphic from '@arcgis/core/Graphic';
 import Polyline from '@arcgis/core/geometry/Polyline';
+import ComboBoxInput from '@arcgis/core/form/elements/inputs/ComboBoxInput';
+import CodedValueDomain from '@arcgis/core/layers/support/CodedValueDomain';
 
 import {
     selectAttribute,
@@ -104,6 +106,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
     const calculateTracksActive = useSelector(selectCalculateTracksActive);
 
     const [locations, setLocations] = useState<FeatureLayer>(null);
+    const [sleeps, setSleeps] = useState<FeatureLayer>(null);
     const [tracks, setTracks] = useState<FeatureLayer>(null);
 
     const [locationsData, setLocationsData] = useState<any>(null);
@@ -167,7 +170,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         const rendererLocations: any = {
             type: 'unique-value', // autocasts as new UniqueValueRenderer()
-            field: 'category',
+            field: 'pointType',
             defaultSymbol: {
                 type: 'simple-marker', // autocasts as new SimpleMarkerSymbol()
                 style: 'circle',
@@ -243,12 +246,88 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             ],
         };
 
+        const categoryExpressionInfos = [
+            {
+                name: 'category-sleep',
+                expression: "$feature.pointType == 'sleep'",
+            },
+            {
+                name: 'transport-boat',
+                expression: "$feature.transport == 'boat'",
+            },
+        ];
+        const formTemplate = {
+            // Autocasts to new FormTemplate
+            elements: [
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'pointType',
+                    label: getTranslationStatic('pointType'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'name',
+                    label: getTranslationStatic('name'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'transport',
+                    label: getTranslationStatic('transport'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'boat',
+                    label: getTranslationStatic('boat'),
+                    visibilityExpression: 'transport-boat',
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'travel_date',
+                    label: getTranslationStatic('travel_date'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'people',
+                    label: getTranslationStatic('people'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'description',
+                    label: getTranslationStatic('description'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'sleepCategory',
+                    label: getTranslationStatic('sleepCategory'),
+                    visibilityExpression: 'category-sleep',
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'noNights',
+                    label: getTranslationStatic('noNights'),
+                    visibilityExpression: 'category-sleep',
+                },
+            ],
+            expressionInfos: categoryExpressionInfos,
+        }; // end of form template elements
+
         const tracksLayer = new FeatureLayer({
             portalItem: {
                 id: tracksId,
             },
             //renderer: rendererTracks,
             outFields: ['*'],
+            title: getTranslationStatic('tracks'),
+            editingEnabled: false,
         });
 
         view.map.add(tracksLayer);
@@ -259,11 +338,29 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             },
             //renderer: rendererLocations,
             outFields: ['*'],
+            definitionExpression: "pointType <> 'sleep'",
+            popupEnabled: false,
+            title: getTranslationStatic('locations'),
+            legendEnabled: false,
+            formTemplate: formTemplate,
         });
 
         view.map.add(locationsLayer);
 
+        const sleepsLayer = new FeatureLayer({
+            portalItem: {
+                id: locationsId,
+            },
+            definitionExpression: "pointType = 'sleep'",
+            popupEnabled: true,
+            title: getTranslationStatic('sleeps'),
+            editingEnabled: false,
+        });
+
+        view.map.add(sleepsLayer);
+
         setLocations(locationsLayer);
+        setSleeps(sleepsLayer);
         setTracks(tracksLayer);
 
         //locationsLayer.popupTemplate = templateLocations;
@@ -712,9 +809,11 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 boat: to.attributes.boat,
             };
 
-            if (to.attributes.category != 'sleep') {
+            if (to.attributes.pointType != 'sleep') {
                 attributes['people'] = to.attributes.people;
                 attributes['description'] = to.attributes.description;
+            } else {
+                console.log('Wuhu');
             }
 
             const addFeature = new Graphic({
@@ -815,7 +914,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 if (
                     locData[indexNext].attributes.transport == 'car' ||
                     locData[indexNext].attributes.transport == 'car' ||
-                    locData[indexNext].attributes.transport == 'bus'
+                    locData[indexNext].attributes.transport == 'bus' ||
+                    locData[indexNext].attributes.transport == 'rentalCar'
                 ) {
                     route.solve(routeUrl, routeParams).then((data) => {
                         const routeResult: any = data.routeResults[0].route;

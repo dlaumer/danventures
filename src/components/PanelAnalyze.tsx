@@ -54,7 +54,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
         setNumbersDashboard(
             <div
                 id="numbersDashboard"
-                className="bg-lighergray p-[10px] rounded-xl flex w-full h-1/5"
+                className="bg-lighergray p-[10px] rounded-xl flex w-full h-1/6"
             >
                 <div className="h-full w-1/4">
                     <div className="absolute text-xs">
@@ -130,7 +130,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                 className="flex-1 w-full p-[5px] my-[2.5px]  overflow-auto"
             >
                 {numbersDashboard}
-                <div id="chartsContainer" className="flex h-4/5 w-full">
+                <div id="chartsContainer" className="flex h-5/6 w-full">
                     <ChartDistance />
                     <ChartSleeps />
                 </div>
