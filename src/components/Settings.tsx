@@ -68,9 +68,16 @@ const Settings: FC<React.ComponentProps<'div'>> = () => {
                 </div>
                 <div className="h-[20%] w-full">
                     <Button
-                        titleKey="it"
-                        onClick={() => dispatch(setLanguage('it'))}
-                        isActive={language == 'it'}
+                        titleKey="es"
+                        onClick={() => dispatch(setLanguage('es'))}
+                        isActive={language == 'es'}
+                    ></Button>
+                </div>
+                <div className="h-[20%] w-full">
+                    <Button
+                        titleKey="pl"
+                        onClick={() => dispatch(setLanguage('pl'))}
+                        isActive={language == 'pl'}
                     ></Button>
                 </div>
             </div>

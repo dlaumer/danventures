@@ -32,6 +32,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     const categories: string = 'transport';
     const [data, setData] = useState<any>(null);
     const [dataFinancial, setDataFinancial] = useState<any>(null);
+    const [translations, setTranslations] = useState<any>(null);
 
     useEffect(() => {
         parseData(features);
@@ -56,6 +57,11 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
 
     const parseData = (features: any) => {
         const dataTemp = [];
+        const translationsTemp: any = {};
+
+        translationsTemp[getTranslationStatic('paid')] = 'paid';
+        translationsTemp[getTranslationStatic('free')] = 'free';
+
         let paid = 0;
         let free = 0;
         for (const i in features) {
@@ -66,6 +72,9 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 const value = Math.round(
                     (features[i].attributes[attribute] * 0.9144) / 1000
                 );
+                translationsTemp[
+                    getTranslationStatic(features[i].attributes[categories])
+                ] = features[i].attributes[categories];
                 dataTemp.push({
                     name: getTranslationStatic(
                         features[i].attributes[categories]
@@ -90,9 +99,11 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
             }
         }
         setData(dataTemp);
+        setTranslations(translationsTemp);
+
         setDataFinancial([
-            { name: 'free', value: free },
-            { name: 'paid', value: paid },
+            { name: getTranslationStatic('free'), value: free },
+            { name: getTranslationStatic('paid'), value: paid },
         ]);
     };
 
@@ -125,7 +136,11 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 fill="#000000"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
-                                    dispatch(setHoverFeatures(event.name));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
                                 }}
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
@@ -134,7 +149,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 {data?.map((entry: any, index: any) => (
                                     <Cell
                                         key={`cell-${index}`}
-                                        fill={colors[entry.name]}
+                                        fill={colors[translations[entry.name]]}
                                     />
                                 ))}
                             </Bar>
@@ -165,7 +180,12 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 dataKey="value"
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
-                                    dispatch(setHoverFeatures(event.name));
+                                    dispatch(setAttribute(categories));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
                                 }}
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));

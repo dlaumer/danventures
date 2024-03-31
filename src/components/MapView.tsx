@@ -1028,7 +1028,26 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 if (mapView.timeExtent != null) {
                     filter.timeExtent = mapView.timeExtent;
                     if (hoverFeatures != null) {
-                        filter.where = attribute + " = '" + hoverFeatures + "'";
+                        if (hoverFeatures == 'paid') {
+                            if (attribute == 'transport') {
+                                filter.where =
+                                    "transport = 'bus' OR transport = 'ferry' OR transport = 'rentalCar' OR transport = 'plane'";
+                            } else if (attribute == 'sleepCategory') {
+                                filter.where =
+                                    "sleepCategory = 'hostel' OR sleepCategory = 'airbnb'";
+                            }
+                        } else if (hoverFeatures == 'free') {
+                            if (attribute == 'transport') {
+                                filter.where =
+                                    "transport = 'car' OR transport = 'truck' OR transport = 'boat'";
+                            } else if (attribute == 'sleepCategory') {
+                                filter.where =
+                                    "sleepCategory = 'camping' OR sleepCategory = 'boat' OR sleepCategory = 'house' OR sleepCategory = 'couchsurfing'";
+                            }
+                        } else {
+                            filter.where =
+                                attribute + " = '" + hoverFeatures + "'";
+                        }
                     }
 
                     if (attribute == 'transport') {

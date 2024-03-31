@@ -35,6 +35,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     const categories: string = 'sleepCategory';
     const [data, setData] = useState<any>(null);
     const [dataFinancial, setDataFinancial] = useState<any>(null);
+    const [translations, setTranslations] = useState<any>(null);
 
     useEffect(() => {
         parseData(features);
@@ -48,6 +49,10 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
 
     const parseData = (features: any) => {
         const dataTemp = [];
+        const translationsTemp: any = {};
+        translationsTemp[getTranslationStatic('paid')] = 'paid';
+        translationsTemp[getTranslationStatic('free')] = 'free';
+
         let paid = 0;
         let free = 0;
         for (const i in features) {
@@ -55,6 +60,9 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 features[i].attributes[categories] != null &&
                 features[i].attributes[categories] != ''
             ) {
+                translationsTemp[
+                    getTranslationStatic(features[i].attributes[categories])
+                ] = features[i].attributes[categories];
                 dataTemp.push({
                     name: getTranslationStatic(
                         features[i].attributes[categories]
@@ -77,9 +85,11 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
             }
         }
         setData(dataTemp);
+        setTranslations(translationsTemp);
+
         setDataFinancial([
-            { name: 'free', value: free },
-            { name: 'paid', value: paid },
+            { name: getTranslationStatic('free'), value: free },
+            { name: getTranslationStatic('paid'), value: paid },
         ]);
     };
 
@@ -112,7 +122,11 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
-                                    dispatch(setHoverFeatures(event.name));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
                                 }}
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
@@ -147,7 +161,11 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
-                                    dispatch(setHoverFeatures(event.name));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
                                 }}
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
