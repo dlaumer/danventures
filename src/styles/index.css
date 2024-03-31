@@ -92,6 +92,10 @@
         height: 100px !important
     }
 
+    .generalNumbers  {
+        font-size: 0.75rem !important;
+    }
+
     #filterTimeContainer {
         position: absolute !important;
         bottom: 0px !important;

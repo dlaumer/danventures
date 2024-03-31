@@ -60,7 +60,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <div className="absolute text-xs">
                         {getTranslation('totalDistance')}
                     </div>
-                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                    <div className="generalNumbers text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
                         {generalNumbers.totalDistance + ' km'}
                     </div>
                 </div>
@@ -68,7 +68,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <div className="absolute text-xs">
                         {getTranslation('totalRides')}
                     </div>
-                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                    <div className="generalNumbers text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
                         {generalNumbers.totalRides}
                     </div>
                 </div>
@@ -76,7 +76,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <div className="absolute text-xs">
                         {getTranslation('totalDays')}
                     </div>
-                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                    <div className="generalNumbers text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
                         {generalNumbers.totalDays +
                             ' ' +
                             getTranslation('days')}
@@ -87,7 +87,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <div className="absolute text-xs">
                         {getTranslation('totalTravelDays')}
                     </div>
-                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                    <div className="generalNumbers text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
                         {generalNumbers.totalTravelDays +
                             ' ' +
                             getTranslation('days')}
@@ -98,7 +98,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     <div className="absolute text-xs">
                         {getTranslation('totalCost')}
                     </div>
-                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                    <div className="generalNumbers text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
                         {generalNumbers.totalCost +
                             ' ' +
                             getTranslation('euros')}
