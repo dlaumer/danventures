@@ -56,7 +56,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                 id="numbersDashboard"
                 className="bg-lighergray p-[10px] rounded-xl flex w-full h-1/6"
             >
-                <div className="h-full w-1/4">
+                <div className="h-full w-1/5">
                     <div className="absolute text-xs">
                         {getTranslation('totalDistance')}
                     </div>
@@ -64,7 +64,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                         {generalNumbers.totalDistance + ' km'}
                     </div>
                 </div>
-                <div className="h-full w-1/4">
+                <div className="h-full w-1/5">
                     <div className="absolute text-xs">
                         {getTranslation('totalRides')}
                     </div>
@@ -72,7 +72,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                         {generalNumbers.totalRides}
                     </div>
                 </div>
-                <div className="h-full w-1/4">
+                <div className="h-full w-1/5">
                     <div className="absolute text-xs">
                         {getTranslation('totalDays')}
                     </div>
@@ -83,7 +83,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     </div>
                 </div>
 
-                <div className="h-full w-1/4">
+                <div className="h-full w-1/5">
                     <div className="absolute text-xs">
                         {getTranslation('totalTravelDays')}
                     </div>
@@ -91,6 +91,17 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                         {generalNumbers.totalTravelDays +
                             ' ' +
                             getTranslation('days')}
+                    </div>
+                </div>
+
+                <div className="h-full w-1/5">
+                    <div className="absolute text-xs">
+                        {getTranslation('totalCost')}
+                    </div>
+                    <div className="text-xl text-mainyellow font-bold flex items-center justify-center h-full w-full">
+                        {generalNumbers.totalCost +
+                            ' ' +
+                            getTranslation('euros')}
                     </div>
                 </div>
             </div>

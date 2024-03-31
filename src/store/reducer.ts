@@ -64,6 +64,7 @@ export const initialAppState: AppState = {
         totalDays: 0,
         totalRides: 0,
         totalTravelDays: 0,
+        totalCost: 0,
     },
 
     features: null,

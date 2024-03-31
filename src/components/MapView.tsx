@@ -257,6 +257,17 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 name: 'transport-boat',
                 expression: "$feature.transport == 'boat'",
             },
+            {
+                name: 'category-sleepCost',
+                expression:
+                    "$feature.sleepCategory == 'hostel' || $feature.sleepCategory == 'airbnb'",
+            },
+
+            {
+                name: 'category-travelCost',
+                expression:
+                    "$feature.transport == 'bus' || $feature.transport == 'rentalCar' || $feature.transport == 'ferry' || $feature.transport == 'plane'",
+            },
         ];
         const formTemplate = {
             // Autocasts to new FormTemplate
@@ -278,6 +289,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     type: 'field',
                     fieldName: 'transport',
                     label: getTranslationStatic('transport'),
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'travelCost',
+                    label: getTranslationStatic('travelCost'),
+                    visibilityExpression: 'category-travelCost',
                 },
                 {
                     // Autocasts to new FieldElement
@@ -317,6 +335,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     fieldName: 'noNights',
                     label: getTranslationStatic('noNights'),
                     visibilityExpression: 'category-sleep',
+                },
+                {
+                    // Autocasts to new FieldElement
+                    type: 'field',
+                    fieldName: 'sleepCost',
+                    label: getTranslationStatic('sleepCost'),
+                    visibilityExpression: 'category-sleepCost',
                 },
             ],
             expressionInfos: categoryExpressionInfos,
@@ -672,6 +697,26 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
                     promises.push(queryLayer(locationsLayer, query4));
 
+                    const query5: any = {
+                        where: `1=1`,
+                        returnGeometry: false,
+                        outStatistics: [
+                            {
+                                statisticType: 'sum',
+                                onStatisticField: 'travelCost',
+                                outStatisticFieldName: 'sumTravelCost',
+                            },
+                            {
+                                statisticType: 'sum',
+                                onStatisticField: 'SleepCost',
+                                outStatisticFieldName: 'sumSleepCost',
+                            },
+                        ],
+                        timeExtent: view.timeExtent,
+                    };
+
+                    promises.push(queryLayer(locationsLayer, query5));
+
                     Promise.all(promises).then((results) => {
                         const uniqueDays = new Set();
                         results[3].features.forEach(function (feature: any) {
@@ -706,6 +751,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                                     'countTransports'
                                 ],
                             totalTravelDays: uniqueDaysCount,
+                            totalCost:
+                                results[4].features[0].attributes[
+                                    'sumTravelCost'
+                                ] +
+                                results[4].features[0].attributes[
+                                    'sumSleepCost'
+                                ],
                         };
                         dispatch(setGeneralNumbers(numbers));
                         resolve('Resolved');
@@ -808,10 +860,11 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 nameTo: to.attributes.name,
                 travel_date: to.attributes.travel_date,
                 boat: to.attributes.boat,
+                people: to.attributes.people,
+                description: to.attributes.description,
+                travelCost: to.attributes.travelCost,
+                sleepCost: to.attributes.sleepCost,
             };
-
-            attributes['people'] = to.attributes.people;
-            attributes['description'] = to.attributes.description;
 
             const addFeature = new Graphic({
                 geometry: track,

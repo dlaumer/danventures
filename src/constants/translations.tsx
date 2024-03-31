@@ -155,6 +155,12 @@ const translations = {
     sleepCategory: {
         en: 'Sleep category',
     },
+    totalCost: {
+        en: 'Total travel costs',
+    },
+    euros: {
+        en: 'Euros',
+    },
 };
 
 export default translations;

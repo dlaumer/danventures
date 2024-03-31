@@ -45,6 +45,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
         ferry: '#FFAA00',
         foot: '#C500FF',
         rentalCar: '#FFFF00',
+        plane: '#000000',
     };
 
     const tickFormatter = (value: string, index: number) => {
@@ -80,7 +81,9 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     free += value;
                 } else if (
                     features[i].attributes[categories] == 'bus' ||
-                    features[i].attributes[categories] == 'ferry'
+                    features[i].attributes[categories] == 'ferry' ||
+                    features[i].attributes[categories] == 'rentalCar' ||
+                    features[i].attributes[categories] == 'plane'
                 ) {
                     paid += value;
                 }
