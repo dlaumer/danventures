@@ -69,7 +69,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 features[i].attributes[categories] != null &&
                 features[i].attributes[categories] != ''
             ) {
-                const value = Math.round(
+                const km = Math.round(
                     (features[i].attributes[attribute] * 0.9144) / 1000
                 );
                 translationsTemp[
@@ -79,7 +79,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     name: getTranslationStatic(
                         features[i].attributes[categories]
                     ),
-                    value: value,
+                    km: km,
                 });
                 if (
                     features[i].attributes[categories] == 'car' ||
@@ -87,28 +87,25 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     features[i].attributes[categories] == 'boat' ||
                     features[i].attributes[categories] == 'foot'
                 ) {
-                    free += value;
+                    free += km;
                 } else if (
                     features[i].attributes[categories] == 'bus' ||
                     features[i].attributes[categories] == 'ferry' ||
                     features[i].attributes[categories] == 'rentalCar' ||
                     features[i].attributes[categories] == 'plane'
                 ) {
-                    paid += value;
+                    paid += km;
                 }
             }
         }
         setData(dataTemp);
         setTranslations(translationsTemp);
 
-        setDataFinancial([
-            { name: getTranslationStatic('free'), value: free },
-            { name: getTranslationStatic('paid'), value: paid },
-        ]);
+        setDataFinancial([{ paid: paid, free: free, km: free }]);
     };
 
     return (
-        <div className="w-1/2 h-full chartsContainer2">
+        <div className="w-full h-full chartsContainer2">
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('transportation')}
             </div>
@@ -124,15 +121,13 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 bottom: 5,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
                                 dataKey="name"
                                 tickFormatter={tickFormatter}
                             />
-                            <YAxis />
                             <Tooltip />
                             <Bar
-                                dataKey="value"
+                                dataKey="km"
                                 fill="#000000"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
@@ -162,6 +157,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                             data={dataFinancial}
+                            layout="vertical"
                             margin={{
                                 top: 5,
                                 right: 30,
@@ -169,15 +165,26 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 bottom: 5,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                                dataKey="name"
-                                tickFormatter={tickFormatter}
-                            />
-                            <YAxis />
+                            <XAxis type="number" />
                             <Tooltip />
                             <Bar
-                                dataKey="value"
+                                dataKey="free"
+                                fill="#FFD37F"
+                                onMouseOver={(event) => {
+                                    dispatch(setAttribute(categories));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
+                                }}
+                                onMouseOut={(event) => {
+                                    dispatch(setHoverFeatures(null));
+                                }}
+                                activeBar={<Rectangle fill="#febc42" />}
+                            />
+                            <Bar
+                                dataKey="paid"
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));

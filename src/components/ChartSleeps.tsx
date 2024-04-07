@@ -67,7 +67,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     name: getTranslationStatic(
                         features[i].attributes[categories]
                     ),
-                    value: features[i].attributes[attribute],
+                    days: features[i].attributes[attribute],
                 });
                 if (
                     features[i].attributes[categories] == 'camping' ||
@@ -88,13 +88,13 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         setTranslations(translationsTemp);
 
         setDataFinancial([
-            { name: getTranslationStatic('free'), value: free },
-            { name: getTranslationStatic('paid'), value: paid },
+            { name: getTranslationStatic('free'), days: free },
+            { name: getTranslationStatic('paid'), days: paid },
         ]);
     };
 
     return (
-        <div className="w-1/2 h-full chartsContainer2">
+        <div className="w-full h-full chartsContainer2">
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('accomodation')}
             </div>
@@ -110,15 +110,13 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 bottom: 5,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
                                 dataKey="name"
                                 tickFormatter={tickFormatter}
                             />
-                            <YAxis />
                             <Tooltip />
                             <Bar
-                                dataKey="value"
+                                dataKey="days"
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
@@ -149,15 +147,13 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 bottom: 5,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
                                 dataKey="name"
                                 tickFormatter={tickFormatter}
                             />
-                            <YAxis />
                             <Tooltip />
                             <Bar
-                                dataKey="value"
+                                dataKey="days"
                                 fill="#FFD37F"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));

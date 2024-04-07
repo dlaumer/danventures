@@ -57,6 +57,7 @@
 }
 
 
+
 @media only screen and (max-width: 600px) {
 
     #titleContainer {
@@ -109,17 +110,7 @@
         overflow: visible !important;
     }
 
-    #chartsContainer {
-        flex-direction: column !important;
-        height: 600px !important;
-        overflow: scroll;
-        padding-bottom: 200px;
-        display: block !important;
-    }
-
-    .chartsContainer2 {
-        width: 100%;
-    }
+    
 
     #settings {
         width: 350px !important;
