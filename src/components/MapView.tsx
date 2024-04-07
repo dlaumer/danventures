@@ -963,7 +963,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
                 if (
                     locData[indexNext].attributes.transport == 'car' ||
-                    locData[indexNext].attributes.transport == 'car' ||
+                    locData[indexNext].attributes.transport == 'truck' ||
                     locData[indexNext].attributes.transport == 'bus' ||
                     locData[indexNext].attributes.transport == 'rentalCar'
                 ) {
