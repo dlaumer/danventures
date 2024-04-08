@@ -48,7 +48,7 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
     return (
         <div
             id="analyze"
-            className={`flex grow flex-col flex-none z-30 w-full bg-lighergray`}
+            className={`flex h-full grow flex-col flex-none z-30 w-full bg-lighergray`}
         >
             <div
                 id="handle"
@@ -63,10 +63,13 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
                     }}
                 ></div>
             </div>
-            <div id="filterChart" className="flex-1 w-full p-[5px] my-[2.5px]">
+            <div
+                id="filterChart"
+                className="flex-1 h-full w-full p-[5px] my-[2.5px]"
+            >
                 <div
                     id="chartsContainer"
-                    className="flex flex-col !h-[600px] pb-[200px] !block h-5/6 w-full"
+                    className="flex flex-col h-full w-full"
                 >
                     <ChartDistance />
                     <ChartSleeps />

@@ -1083,7 +1083,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 id="mapContainer"
                 style={{
                     width: '100%',
-                    height: '75%',
+                    height: '80%',
                     backgroundColor: 'grey',
                 }}
                 ref={mapDivRef}

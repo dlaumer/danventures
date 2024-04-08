@@ -87,10 +87,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         setData(dataTemp);
         setTranslations(translationsTemp);
 
-        setDataFinancial([
-            { name: getTranslationStatic('free'), days: free },
-            { name: getTranslationStatic('paid'), days: paid },
-        ]);
+        setDataFinancial([{ paid: paid, free: free, km: free }]);
     };
 
     return (
@@ -98,7 +95,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('accomodation')}
             </div>
-            <div id="chart3" className="h-[45%] w-full p-[5px]">
+            <div id="chart3" className="h-[65%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -135,26 +132,31 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     </ResponsiveContainer>
                 </div>
             </div>
-            <div id="chart4" className="h-[45%] w-full p-[10px]">
+            <div id="chart4" className="h-[25%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                             data={dataFinancial}
+                            layout="vertical"
                             margin={{
                                 top: 5,
                                 right: 30,
-                                left: 20,
+                                left: -40,
                                 bottom: 5,
                             }}
                         >
-                            <XAxis
-                                dataKey="name"
-                                tickFormatter={tickFormatter}
+                            {' '}
+                            <YAxis
+                                type="category"
+                                axisLine={false}
+                                tick={false}
                             />
+                            <XAxis type="number" />
                             <Tooltip />
                             <Bar
-                                dataKey="days"
-                                fill="#FFD37F"
+                                dataKey="free"
+                                fill="#046c00"
+                                stackId="a"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -166,7 +168,22 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                                activeBar={<Rectangle fill="#febc42" />}
+                            />
+                            <Bar
+                                dataKey="paid"
+                                fill="#b50000"
+                                stackId="a"
+                                onMouseOver={(event) => {
+                                    dispatch(setAttribute(categories));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
+                                }}
+                                onMouseOut={(event) => {
+                                    dispatch(setHoverFeatures(null));
+                                }}
                             />
                         </BarChart>
                     </ResponsiveContainer>

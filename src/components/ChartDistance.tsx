@@ -109,7 +109,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('transportation')}
             </div>
-            <div id="chart1" className="h-[45%] w-full p-[5px]">
+            <div id="chart1" className="h-[65%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -152,7 +152,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     </ResponsiveContainer>
                 </div>
             </div>
-            <div id="chart2" className="h-[45%] w-full p-[5px]">
+            <div id="chart2" className="h-[25%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -161,15 +161,22 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                             margin={{
                                 top: 5,
                                 right: 30,
-                                left: 20,
+                                left: -40,
                                 bottom: 5,
                             }}
                         >
+                            {' '}
+                            <YAxis
+                                type="category"
+                                axisLine={false}
+                                tick={false}
+                            />
                             <XAxis type="number" />
                             <Tooltip />
                             <Bar
                                 dataKey="free"
-                                fill="#FFD37F"
+                                fill="#046c00"
+                                stackId="a"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -181,11 +188,11 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                                activeBar={<Rectangle fill="#febc42" />}
                             />
                             <Bar
                                 dataKey="paid"
-                                fill="#FFD37F"
+                                fill="#b50000"
+                                stackId="a"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -197,7 +204,6 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                                activeBar={<Rectangle fill="#febc42" />}
                             />
                         </BarChart>
                     </ResponsiveContainer>
