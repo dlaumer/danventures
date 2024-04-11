@@ -61,8 +61,10 @@ import {
     selectHoverFeatures,
     selectIsLoggedIn,
     selectLanguage,
+    selectLocationData,
     selectLogInAttempt,
     selectSidePanelContent,
+    selectVisibleElements,
 } from '@store/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -77,6 +79,7 @@ import {
     setFilterTimeStart,
     setGeneralNumbers,
     setIsLoggedIn,
+    setLocationData,
     setLogInAttempt,
     setSleepCategories,
     setUsernameEsri,
@@ -106,12 +109,12 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
     const calculateTracksActive = useSelector(selectCalculateTracksActive);
     const hoverFeatures = useSelector(selectHoverFeatures);
     const attribute = useSelector(selectAttribute);
+    const locationData = useSelector(selectLocationData);
+    const visibleElements = useSelector(selectVisibleElements);
 
     const [locations, setLocations] = useState<FeatureLayer>(null);
     const [sleeps, setSleeps] = useState<FeatureLayer>(null);
     const [tracks, setTracks] = useState<FeatureLayer>(null);
-
-    const [locationsData, setLocationsData] = useState<any>(null);
 
     const locationsId = '2fdef304971d4357a6f5f31535e32ac8';
     const tracksId = '3c6cc36205ea46afb38bf901c1147784';
@@ -556,6 +559,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 debouncedSliderHandler(value.end);
             });
 
+            queryLocations(view, locationsLayer);
+
             queryDistances(view, tracksLayer);
             querySleeps(view, locationsLayer);
             queryGeneralNumbers(view, tracksLayer, locationsLayer);
@@ -827,7 +832,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     };
 
-    const queryLocations = (view: MapView) => {
+    const queryLocations = (view: MapView, locations: FeatureLayer) => {
         if (view != null) {
             // Get the correct layer
 
@@ -841,8 +846,20 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
             queryLayer(locations, query)
                 .then((result: any) => {
-                    calculateTracks(result.features);
-                    dispatch(setCalculateTracksActive(false));
+                    const locData: any = {};
+                    for (const i in result.features) {
+                        const date = result.features[i].attributes.travel_date;
+                        locData[date] = {
+                            attributes: result.features[i].attributes,
+                            geometry: result.features[i].geometry,
+                        };
+                    }
+                    dispatch(setLocationData(locData));
+
+                    if (calculateTracksActive) {
+                        calculateTracks(locData);
+                        dispatch(setCalculateTracksActive(false));
+                    }
                 })
                 .catch((error: any) => {
                     dispatch(setCalculateTracksActive(false));
@@ -925,18 +942,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         };
     };
 
-    const calculateTracks = (features: any) => {
-        const locData: any = {};
-        for (const i in features) {
-            console.log(features[i]);
-            const date = features[i].attributes.travel_date;
-            locData[date] = {
-                attributes: features[i].attributes,
-                geometry: features[i].geometry,
-            };
-        }
-        setLocationsData(locData);
-
+    const calculateTracks = (locData: any) => {
         const seq = Object.keys(locData);
         seq.sort((a: any, b: any) => a - b);
         for (let i = 0; i < seq.length - 1; i++) {
@@ -1005,9 +1011,23 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     useEffect(() => {
         if (calculateTracksActive) {
-            queryLocations(mapView);
+            queryLocations(mapView, locations);
         }
     }, [calculateTracksActive]);
+
+    useEffect(() => {
+        if (visibleElements.length > 1) {
+            const newArray = visibleElements.filter(function (value) {
+                return !Number.isNaN(value);
+            });
+
+            const currentDate = Math.max(...newArray);
+            mapView.timeExtent = new TimeExtent({
+                start: new Date(2023, 8, 27),
+                end: new Date(currentDate),
+            });
+        }
+    }, [visibleElements]);
 
     useEffect(() => {
         // For some reason it always excecuted this twice, so that's a hacky solution to fix this

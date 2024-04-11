@@ -7,6 +7,7 @@ import Header from './Header';
 import SidePanel from './SidePanel';
 import Settings from './Settings';
 import MobileInfo from './MobileInfo';
+import LocationsPanel from './LocationsPanel';
 
 const MapViewContainer = () => {
     return (
@@ -23,6 +24,7 @@ const MapViewContainer = () => {
                         <div id="filterTimeContainer"></div>
                     </div>
                 </div>
+                <LocationsPanel></LocationsPanel>
             </div>
             <Settings></Settings>
         </div>
