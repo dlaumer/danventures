@@ -397,15 +397,11 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         const slider = new TimeSlider({
             view: view,
-            mode: 'cumulative-from-start',
             fullTimeExtent: {
                 start: new Date(2023, 8, 27),
                 end: actualDate,
             },
-            timeExtent: {
-                start: null,
-                end: actualDate,
-            },
+
             stops: {
                 interval: new TimeInterval({
                     value: 1,
@@ -559,7 +555,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 debouncedSliderHandler(value.end);
             });
 
-            queryLocations(view, locationsLayer);
+            queryLocations(view, locationsLayer, tracksLayer);
 
             queryDistances(view, tracksLayer);
             querySleeps(view, locationsLayer);
@@ -832,7 +828,11 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     };
 
-    const queryLocations = (view: MapView, locations: FeatureLayer) => {
+    const queryLocations = (
+        view: MapView,
+        locations: FeatureLayer,
+        tracks: FeatureLayer
+    ) => {
         if (view != null) {
             // Get the correct layer
 
@@ -854,7 +854,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                             geometry: result.features[i].geometry,
                         };
                     }
-                    dispatch(setLocationData(locData));
+                    queryTracks(view, tracks, locData);
 
                     if (calculateTracksActive) {
                         calculateTracks(locData);
@@ -864,6 +864,34 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 .catch((error: any) => {
                     dispatch(setCalculateTracksActive(false));
                 });
+        }
+    };
+
+    const queryTracks = (view: MapView, tracks: FeatureLayer, locData: any) => {
+        if (view != null) {
+            // Get the correct layer
+
+            const query: any = {
+                //where: `EXTRACT(MONTH FROM ${layer.timeInfo.startField}) = ${month}`,
+                where: `1=1`,
+                returnGeometry: true,
+                outFields: ['*'],
+                maxRecordCountFactor: 2,
+            };
+
+            queryLayer(tracks, query).then((result: any) => {
+                for (const i in result.features) {
+                    const date = result.features[i].attributes.indexTo;
+                    console.log(result.features[i].attributes['Shape__Length']);
+
+                    locData[date]['distance'] = Math.round(
+                        (result.features[i].attributes['Shape__Length'] *
+                            0.9144) /
+                            1000
+                    );
+                }
+                dispatch(setLocationData(locData));
+            });
         }
     };
 
@@ -1011,7 +1039,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     useEffect(() => {
         if (calculateTracksActive) {
-            queryLocations(mapView, locations);
+            queryLocations(mapView, locations, tracks);
         }
     }, [calculateTracksActive]);
 

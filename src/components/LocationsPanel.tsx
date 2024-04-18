@@ -41,13 +41,17 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
     //const [content, setContent] = useState(null);
     const [content, setContent] = useState<any>(null);
 
-    {
-        /* At the top */
-    }
+    const colors: any = {
+        car: '#73B2FF',
+        truck: '#73DFFF',
+        boat: '#FF7F7F',
+        bus: '#A7C636',
+        ferry: '#FFAA00',
+        foot: '#C500FF',
+        rentalCar: '#FFFF00',
+        plane: '#000000',
+    };
 
-    {
-        /* Within the component */
-    }
     const { ref, inView } = useInView({
         threshold: 0.2,
     });
@@ -64,10 +68,23 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         }
     };
 
+    function distanceToPixel(distance: number) {
+        // Limiting the distance between 0 and 1200 km
+        distance = Math.max(0, Math.min(1200, distance));
+
+        // Logarithmic mapping
+        // Adjusting the range to match the desired pixel size range (50 to 200)
+        const pixelSize =
+            50 + (150 * Math.log10(distance + 1)) / Math.log10(1201);
+
+        // Rounding the pixel size to the nearest integer
+        return Math.round(pixelSize);
+    }
+
     useEffect(() => {
         if (locationData != null) {
-            const seqs = Object.keys(locationData);
-            seqs.sort((a: any, b: any) => b - a);
+            const seqsTemp = Object.keys(locationData);
+            const seqs = seqsTemp.sort((a, b) => b.localeCompare(a));
 
             // Section wrapper
             setContent(
@@ -80,15 +97,84 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                         >
                             {({ ref }) => {
                                 return (
-                                    <div
-                                        id={section}
-                                        ref={ref}
-                                        className="w-full h-fit bg-backgroundgray rounded-xl"
-                                    >
-                                        {section +
-                                            ', ' +
-                                            locationData[section].attributes
-                                                .name}
+                                    <div className="bg-white">
+                                        <div
+                                            id={section}
+                                            ref={ref}
+                                            className={`relative w-full flex items-center align-center w-full h-[50px]`}
+                                        >
+                                            <div className="absolute top-[3px] right-[3px] text-[10px]">
+                                                {new Date(
+                                                    parseInt(section)
+                                                ).toDateString()}
+                                            </div>
+                                            <div className="flex w-full h-full ">
+                                                <div
+                                                    className={`z-50 ${
+                                                        locationData[section]
+                                                            .attributes
+                                                            .pointType ==
+                                                        'sleep'
+                                                            ? 'w-[15px] h-[15px] rounded-xl m-[9px] bg-mainyellow border-solid border-bordergrey border-[1px]'
+                                                            : 'w-[8px] h-[8px] rounded-xl m-[12px] bg-waypoint border-solid border-bordergrey border-[1px]'
+                                                    } `}
+                                                ></div>
+                                                <div
+                                                    className={`flex items-center align-center h-full w-[calc(100%-34px)] ${
+                                                        locationData[section]
+                                                            .attributes
+                                                            .pointType ==
+                                                        'sleep'
+                                                            ? 'bg-mainyellow'
+                                                            : 'bg-backgroundgray'
+                                                    } rounded-xl`}
+                                                >
+                                                    <div>
+                                                        {
+                                                            locationData[
+                                                                section
+                                                            ].attributes.name
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style={{
+                                                height:
+                                                    distanceToPixel(
+                                                        locationData[section]
+                                                            .distance
+                                                    ).toString() + 'px',
+                                            }}
+                                            className="relative w-full flex items-center align-center justify-center"
+                                        >
+                                            <div
+                                                style={{
+                                                    width: '8px',
+                                                    height:
+                                                        (
+                                                            distanceToPixel(
+                                                                locationData[
+                                                                    section
+                                                                ].distance
+                                                            ) + 50
+                                                        ).toString() + 'px',
+                                                    backgroundColor:
+                                                        colors[
+                                                            locationData[
+                                                                section
+                                                            ].attributes
+                                                                .transport
+                                                        ],
+                                                }}
+                                                className={`z-30 absolute top-[-25px] left-[12px]`}
+                                            ></div>
+                                            <div>
+                                                {locationData[section]
+                                                    .distance + ' km'}
+                                            </div>
+                                        </div>
                                     </div>
                                 );
                             }}
