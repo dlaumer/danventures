@@ -75,7 +75,7 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         // Logarithmic mapping
         // Adjusting the range to match the desired pixel size range (50 to 200)
         const pixelSize =
-            50 + (150 * Math.log10(distance + 1)) / Math.log10(1201);
+            20 + (200 * Math.log10(distance + 1)) / Math.log10(1201);
 
         // Rounding the pixel size to the nearest integer
         return Math.round(pixelSize);
