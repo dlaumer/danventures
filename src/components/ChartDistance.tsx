@@ -69,9 +69,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 features[i].attributes[categories] != null &&
                 features[i].attributes[categories] != ''
             ) {
-                const km = Math.round(
-                    (features[i].attributes[attribute] * 0.9144) / 1000
-                );
+                const km = Math.round(features[i].attributes[attribute] / 1000);
                 translationsTemp[
                     getTranslationStatic(features[i].attributes[categories])
                 ] = features[i].attributes[categories];

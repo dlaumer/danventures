@@ -46,6 +46,7 @@ import Graphic from '@arcgis/core/Graphic';
 import Polyline from '@arcgis/core/geometry/Polyline';
 import ComboBoxInput from '@arcgis/core/form/elements/inputs/ComboBoxInput';
 import CodedValueDomain from '@arcgis/core/layers/support/CodedValueDomain';
+import * as geometryEngineAsync from '@arcgis/core/geometry/geometryEngineAsync';
 
 import {
     selectAttribute,
@@ -395,27 +396,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         //locationsLayer.popupTemplate = templateLocations;
         //tracksLayer.popupTemplate = templateTracks;
 
-        const slider = new TimeSlider({
-            view: view,
-            fullTimeExtent: {
-                start: new Date(2023, 8, 27),
-                end: actualDate,
-            },
-
-            stops: {
-                interval: new TimeInterval({
-                    value: 1,
-                    unit: 'days',
-                }),
-            },
-        });
-
-        setTimeSlider(slider);
-        //dispatch(setFilterTimeStart(slider.timeExtent.start));
-        //dispatch(setFilterTimeEnd(slider.timeExtent.end));
-
-        //view.ui.add(timeSlider, 'bottom-left');
-
         const compass = new Compass({
             view: view,
         });
@@ -519,13 +499,39 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         });
         view.ui.add(elevatonProfile, 'top-right');
 
+        const slider = new TimeSlider({
+            container: document.createElement('div'),
+            view: view,
+            fullTimeExtent: fullTimeExtent,
+            timeExtent: fullTimeExtent,
+
+            stops: {
+                interval: new TimeInterval({
+                    value: 1,
+                    unit: 'days',
+                }),
+            },
+        });
+
+        const slide = new Expand({
+            view: view,
+            content: slider.container,
+            group: 'top-right',
+        });
+
+        setTimeSlider(slider);
+        //dispatch(setFilterTimeStart(slider.timeExtent.start));
+        //dispatch(setFilterTimeEnd(slider.timeExtent.end));
+
+        view.ui.add(slide, 'top-right');
+
         // Remove all ui elements, so that they can be added manually as tools!
         //view.ui.components = ["attribution"];
         //view.ui.components = [];
 
         view.when(() => {
             setMapView(view);
-            slider.container = 'filterTimeContainer';
+            /*slider.container = 'filterTimeContainer';
 
             slider.when(() => {
                 const timeSliderFooter = document.getElementsByClassName(
@@ -537,6 +543,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         event.stopPropagation();
                     };
             });
+            */
 
             // Your event handler function
             const handleSliderChange = (value: any) => {
@@ -650,7 +657,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         outStatistics: [
                             {
                                 statisticType: 'sum',
-                                onStatisticField: 'Shape__length',
+                                onStatisticField: 'distance',
                                 outStatisticFieldName: 'sumLength',
                             },
                         ],
@@ -737,10 +744,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         const uniqueDaysCount = uniqueDays.size;
                         const numbers: any = {
                             totalDistance: Math.round(
-                                (results[0].features[0].attributes[
-                                    'sumLength'
-                                ] *
-                                    0.9144) /
+                                results[0].features[0].attributes['sumLength'] /
                                     1000
                             ),
                             totalDays:
@@ -780,7 +784,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         outStatistics: [
                             {
                                 statisticType: 'sum',
-                                onStatisticField: 'Shape__length',
+                                onStatisticField: 'distance',
                                 outStatisticFieldName: 'sumLength',
                             },
                         ],
@@ -882,12 +886,10 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryLayer(tracks, query).then((result: any) => {
                 for (const i in result.features) {
                     const date = result.features[i].attributes.indexTo;
-                    console.log(result.features[i].attributes['Shape__Length']);
+                    console.log(result.features[i].attributes['distance']);
 
                     locData[date]['distance'] = Math.round(
-                        (result.features[i].attributes['Shape__Length'] *
-                            0.9144) /
-                            1000
+                        result.features[i].attributes['distance'] / 1000
                     );
                 }
                 dispatch(setLocationData(locData));
@@ -897,40 +899,49 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     const addTrack = (from: any, to: any, track: any) => {
         const myPromise: Promise<string> = new Promise((resolve, reject) => {
-            const attributes: any = {
-                indexFrom: from.attributes.travel_date,
-                indexTo: to.attributes.travel_date,
-                transport: to.attributes.transport,
-                nameFrom: from.attributes.name,
-                nameTo: to.attributes.name,
-                travel_date: to.attributes.travel_date,
-                boat: to.attributes.boat,
-                people: to.attributes.people,
-                description: to.attributes.description,
-                travelCost: to.attributes.travelCost,
-                sleepCost: to.attributes.sleepCost,
-            };
+            geometryEngineAsync
+                .geodesicLength(track, 'meters')
+                .then((length) => {
+                    const attributes: any = {
+                        indexFrom: from.attributes.travel_date,
+                        indexTo: to.attributes.travel_date,
+                        transport: to.attributes.transport,
+                        nameFrom: from.attributes.name,
+                        nameTo: to.attributes.name,
+                        travel_date: to.attributes.travel_date,
+                        boat: to.attributes.boat,
+                        people: to.attributes.people,
+                        description: to.attributes.description,
+                        travelCost: to.attributes.travelCost,
+                        sleepCost: to.attributes.sleepCost,
+                        distance: length,
+                        locationID: to.attributes.OBJECTID,
+                    };
 
-            const addFeature = new Graphic({
-                geometry: track,
-                attributes: attributes,
-            });
-            // Apply uploading the (almost) empty row
-            const promise = tracks
-                .applyEdits({
-                    addFeatures: [addFeature],
-                })
-                .then((editInfo) => {
-                    if (editInfo.addFeatureResults[0].objectId != -1) {
-                        console.log(editInfo);
-                        resolve('resolved');
-                    } else {
-                        alert(
-                            'loading not possible: ' +
-                                editInfo.addFeatureResults[0].error.message
-                        );
-                        console.error(editInfo.addFeatureResults[0].error);
-                    }
+                    const addFeature = new Graphic({
+                        geometry: track,
+                        attributes: attributes,
+                    });
+                    // Apply uploading the (almost) empty row
+                    const promise = tracks
+                        .applyEdits({
+                            addFeatures: [addFeature],
+                        })
+                        .then((editInfo) => {
+                            if (editInfo.addFeatureResults[0].objectId != -1) {
+                                console.log(editInfo);
+                                resolve('resolved');
+                            } else {
+                                alert(
+                                    'loading not possible: ' +
+                                        editInfo.addFeatureResults[0].error
+                                            .message
+                                );
+                                console.error(
+                                    editInfo.addFeatureResults[0].error
+                                );
+                            }
+                        });
                 });
         });
 
@@ -1043,19 +1054,37 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     }, [calculateTracksActive]);
 
+    /*
     useEffect(() => {
+        
         if (visibleElements.length > 1) {
             const newArray = visibleElements.filter(function (value) {
                 return !Number.isNaN(value);
             });
 
             const currentDate = Math.max(...newArray);
-            mapView.timeExtent = new TimeExtent({
-                start: new Date(2023, 8, 27),
-                end: new Date(currentDate),
+
+            
+            locations.featureEffect = new FeatureEffect({
+                filter:  new FeatureFilter({
+                    where: "OBJECTID = '" + locationData[currentDate].attributes.OBJECTID + "'"
+                  }),
+                excludedEffect: 'grayscale(100%) opacity(70%)',
+                includedEffect:
+                    'saturate(150%) drop-shadow(0, 0px, 12px)',
+            });
+            mapView.whenLayerView(locations).then(function (
+                layerView: any
+            ) {
+                
+                    //layerView._highlightIds.clear()
+                    //layerView.highlight(locationData[currentDate].attributes.OBJECTID);
+
+                    
             });
         }
     }, [visibleElements]);
+*/
 
     useEffect(() => {
         // For some reason it always excecuted this twice, so that's a hacky solution to fix this
@@ -1125,13 +1154,60 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     }, [hoverFeatures]);
 
+    useEffect(() => {
+        if (mapView != null && locations != null && tracks != null) {
+            if (visibleElements.length > 1) {
+                const newArray = visibleElements.filter(function (value) {
+                    return !Number.isNaN(value);
+                });
+
+                //const currentDate = Math.max(...newArray);
+
+                const visibleElementsID = visibleElements.map(
+                    (date) => locationData[date].attributes.OBJECTID
+                );
+                const includedEffect =
+                    'saturate(150%) drop-shadow(0 0px 10px rgba(0,0,0,1))';
+                const excludedEffect = 'saturate(80%) opacity(90%)';
+
+                tracks.featureEffect = new FeatureEffect({
+                    filter: new FeatureFilter({
+                        timeExtent: mapView.timeExtent,
+                        where:
+                            'locationID in (' +
+                            visibleElementsID.toString() +
+                            ')',
+                    }),
+                    excludedEffect: excludedEffect,
+                    includedEffect: includedEffect,
+                });
+
+                const filter = new FeatureFilter({});
+                filter.timeExtent = mapView.timeExtent;
+                filter.where =
+                    'OBJECTID in (' + visibleElementsID.toString() + ')';
+
+                locations.featureEffect = new FeatureEffect({
+                    filter: filter,
+                    excludedEffect: excludedEffect,
+                    includedEffect: includedEffect,
+                });
+                sleeps.featureEffect = new FeatureEffect({
+                    filter: filter,
+                    excludedEffect: excludedEffect,
+                    includedEffect: includedEffect,
+                });
+            }
+        }
+    }, [visibleElements]);
+
     return (
         <>
             <div
                 id="mapContainer"
                 style={{
                     width: '100%',
-                    height: '80%',
+                    height: '100%',
                     backgroundColor: 'grey',
                 }}
                 ref={mapDivRef}
