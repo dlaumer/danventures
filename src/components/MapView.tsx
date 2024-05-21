@@ -167,7 +167,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         });
         // The view instance is the most important instance for ArcGIS, from here you can access almost all elements like layers, ui elements, widget, etc
         const view = new MapView({
-            popupEnabled: true,
+            popupEnabled: false,
             container: mapDivRef.current,
             map: map,
             center: [-10, 40],
@@ -571,6 +571,41 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             //view.goTo(locationsLayer.fullExtent);
         });
 
+        // Function to show coordinates when making a right click
+        view.on('click', function (event: any) {
+            const screenPoint = {
+                x: event.x,
+                y: event.y,
+            };
+
+            // Convert the screen point to map coordinates
+            view.hitTest(screenPoint).then(function (response: any) {
+                const result = response.results[0];
+                if (result.layer.id == tracksLayer.id) {
+                    // Check if the clicked point is on the ground surface (elevation) or not
+
+                    document
+                        .getElementById(result.graphic.attributes.indexTo)
+                        .scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                            inline: 'nearest',
+                        });
+                } else if (result.layer.id == sleepsLayer.id) {
+                    // Check if the clicked point is on the ground surface (elevation) or not
+
+                    console.log(result.graphic.attributes.travel_date);
+                    document
+                        .getElementById(result.graphic.attributes.travel_date)
+                        .scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                            inline: 'nearest',
+                        });
+                }
+            });
+        });
+
         reactiveUtils.whenOnce(() => !view.updating).then(() => {});
         // Function block the UI while the map is loading!
     };
@@ -886,7 +921,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryLayer(tracks, query).then((result: any) => {
                 for (const i in result.features) {
                     const date = result.features[i].attributes.indexTo;
-                    console.log(result.features[i].attributes['distance']);
 
                     locData[date]['distance'] = Math.round(
                         result.features[i].attributes['distance'] / 1000
