@@ -52,7 +52,7 @@
     display: none;
 }
 
-#handle {
+.handle {
     display: none;
 }
 
@@ -68,43 +68,60 @@
         width: 100% !important;
     }
 
-    #handle {
+    .handle {
         display: flex !important;
     }
 
     #sidePanel {
-        width: 0;
-        height: 0;
+        width: 100%;
+        height: calc(100% - 180px) !important;
+        position: absolute;
+        top: 100%;
+
     }
 
     .sidePanelUp {
-        top: 10% !important
+        top: 120px !important;
+        z-index: 100;
     }
 
-    #locationPanel {
+    .handleStatisticsUp {
+        top: 80px !important;
+        z-index: 100;
+    }
+
+
+    .locationsPanelUp {
+        top: 50% !important;
+        z-index: 100;
+    }
+
+    .handleLocationsUp {
+        top: calc(50% - 40px) !important;
+        z-index: 100;
+    }
+
+    .dashboardOn {
+        display: flex !important;
+    }
+
+    #locationsPanel {
         position: absolute;
         width: 100%;
-        height: 50%;
-        bottom: 0;
+        height: calc(100% - 40px);
+        top: 100%;
     }
 
     #mapviewContainer {
         width: 100% !important;
     }
 
-    #analyze {
-        position: absolute;
-        height: 100%;
-        overflow: visible;
-        top: calc(100% - 124px - 30px);
-        border-radius: 0.75rem;
-    }
-
     #numbersDashboard {
+        display: none;
         position: absolute;
-        bottom: 0;
+        bottom: 0px;
         z-index: 100;
-        background: "#FFD37F";
+        background-color: #FFD37F;
         width: 100%;
         left: 0;
     }
@@ -112,15 +129,6 @@
     .generalNumbers {
         font-size: 0.75rem !important;
     }
-
-    #filterTimeContainer {
-        display: none !important;
-    }
-
-    #filterChart {
-        overflow: visible !important;
-    }
-
 
 
     #settings {

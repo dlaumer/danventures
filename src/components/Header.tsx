@@ -139,7 +139,7 @@ const Header = () => {
             {numbersDashboard}
 
             <div className="flex flex-row h-full items-center gap-2 mr-4 font-noigrotesk">
-                <div className="flex flex-row h-[80%] items-center gap-2 font-noigrotesk">
+                <div className="flex flex-row h-[80%] items-center gap-2 font-noigrotesk text-ellipsis">
                     <Button
                         titleKey="calculateTracks"
                         onClick={() => dispatch(setCalculateTracksActive(true))}

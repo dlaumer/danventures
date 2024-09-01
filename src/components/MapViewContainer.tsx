@@ -27,6 +27,39 @@ const MapViewContainer = () => {
                 <LocationsPanel></LocationsPanel>
             </div>
             <Settings></Settings>
+
+            <div
+                id="handleStatistics"
+                className="handle absolute bottom-0 left-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
+                onClick={() => {
+                    document
+                        .getElementById('sidePanel')
+                        .classList.toggle('sidePanelUp');
+                    document
+                        .getElementById('numbersDashboard')
+                        .classList.toggle('dashboardOn');
+                    document
+                        .getElementById('handleStatistics')
+                        .classList.toggle('handleStatisticsUp');
+                }}
+            >
+                <div>{getTranslation('statistics')}</div>
+            </div>
+            <div
+                id="handleLocations"
+                className="handle absolute bottom-0 right-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
+                onClick={() => {
+                    document
+                        .getElementById('locationsPanel')
+                        .classList.toggle('locationsPanelUp');
+
+                    document
+                        .getElementById('handleLocations')
+                        .classList.toggle('handleLocationsUp');
+                }}
+            >
+                <div>{getTranslation('timeline')}</div>
+            </div>
         </div>
     );
 };

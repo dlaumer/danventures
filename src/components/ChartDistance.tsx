@@ -43,6 +43,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
         truck: '#73DFFF',
         boat: '#FF7F7F',
         bus: '#A7C636',
+        train: '#38a800',
         ferry: '#FFAA00',
         foot: '#C500FF',
         rentalCar: '#FFFF00',
@@ -87,7 +88,9 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 ) {
                     free += km;
                 } else if (
+                    features[i].attributes[categories] == 'train' ||
                     features[i].attributes[categories] == 'bus' ||
+                    features[i].attributes[categories] == 'train' ||
                     features[i].attributes[categories] == 'ferry' ||
                     features[i].attributes[categories] == 'rentalCar' ||
                     features[i].attributes[categories] == 'plane'

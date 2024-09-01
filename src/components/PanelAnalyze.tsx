@@ -33,6 +33,7 @@ import penTool from './../constants/pen-tool.svg';
 import clock from './../constants/clock.svg';
 import crop from './../constants/crop.svg';
 import sliders from './../constants/sliders.svg';
+import { getTranslation } from '@services/languageHelper';
 
 type PanelAnalyzeProps = {
     title?: string;
@@ -48,24 +49,11 @@ const PanelAnalyze: FC<PanelAnalyzeProps & React.ComponentProps<'div'>> = ({
     return (
         <div
             id="analyze"
-            className={`flex h-full grow flex-col flex-none z-30 w-full bg-lighergray`}
+            className={`flex h-full grow flex-col flex-none z-30 w-full`}
         >
             <div
-                id="handle"
-                className="w-full h-[19px] flex items-center justify-center bg-lighergray rounded-xl"
-            >
-                <div
-                    className="bg-white w-[70%] h-[7px] rounded-[0.75rem] m-[5px]"
-                    onClick={() => {
-                        document
-                            .getElementById('analyze')
-                            .classList.toggle('sidePanelUp');
-                    }}
-                ></div>
-            </div>
-            <div
                 id="filterChart"
-                className="flex-1 h-full w-full p-[5px] my-[2.5px]"
+                className="flex-1 h-full w-full p-[5px] bg-lighergray"
             >
                 <div
                     id="chartsContainer"

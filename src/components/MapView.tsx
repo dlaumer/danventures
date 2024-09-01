@@ -270,7 +270,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             {
                 name: 'category-travelCost',
                 expression:
-                    "$feature.transport == 'bus' || $feature.transport == 'rentalCar' || $feature.transport == 'ferry' || $feature.transport == 'plane'",
+                    "$feature.transport == 'train' || $feature.transport == 'bus' || $feature.transport == 'rentalCar' || $feature.transport == 'ferry' || $feature.transport == 'plane'",
             },
         ];
         const formTemplate = {
@@ -1142,7 +1142,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         if (hoverFeatures == 'paid') {
                             if (attribute == 'transport') {
                                 filter.where =
-                                    "transport = 'bus' OR transport = 'ferry' OR transport = 'rentalCar' OR transport = 'plane'";
+                                    "transport = 'bus' OR transport = 'train' OR transport = 'ferry' OR transport = 'train' OR transport = 'rentalCar' OR transport = 'plane'";
                             } else if (attribute == 'sleepCategory') {
                                 filter.where =
                                     "sleepCategory = 'hostel' OR sleepCategory = 'airbnb'";

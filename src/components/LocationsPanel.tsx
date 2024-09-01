@@ -46,6 +46,7 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         truck: '#73DFFF',
         boat: '#FF7F7F',
         bus: '#A7C636',
+        train: '#38a800',
         ferry: '#FFAA00',
         foot: '#C500FF',
         rentalCar: '#FFFF00',
@@ -75,7 +76,7 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         // Logarithmic mapping
         // Adjusting the range to match the desired pixel size range (50 to 200)
         const pixelSize =
-            20 + (200 * Math.log10(distance + 1)) / Math.log10(1201);
+            20 + (100 * Math.log10(distance + 1)) / Math.log10(1201);
 
         // Rounding the pixel size to the nearest integer
         return Math.round(pixelSize);
@@ -188,11 +189,11 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
     // UI part
     return (
         <div
-            key="locationPanel"
-            id="locationPanel"
-            className={`flex flex-col flex-none justify-between z-30 w-1/4  h-full bg-lighergray overflow-scroll`}
+            key="locationsPanel"
+            id="locationsPanel"
+            className={`flex flex-col flex-none justify-between z-30 w-1/4  h-full overflow-scroll`}
         >
-            {content}
+            <div className="h-full w-full bg-lighergray">{content}</div>
         </div>
     );
 };
