@@ -28,6 +28,10 @@ export type AppState = {
     filterSpaceDrawing?: boolean;
 
     generalNumbers?: any;
+
+    locationData: any;
+    visibleElements: number[];
+
     features?: any;
     attribute?: string;
     hoverFeatures?: any;
@@ -66,6 +70,9 @@ export const initialAppState: AppState = {
         totalTravelDays: 0,
         totalCost: 0,
     },
+
+    locationData: null,
+    visibleElements: [],
 
     features: null,
     attribute: null,
@@ -127,6 +134,19 @@ const slice = createSlice({
         setGeneralNumbers: (state, action: PayloadAction<any>) => {
             state.generalNumbers = action.payload;
         },
+        setLocationData: (state, action: PayloadAction<any>) => {
+            state.locationData = action.payload;
+        },
+        addVisibleElement: (state, action: PayloadAction<number>) => {
+            if (action.payload != null) {
+                state.visibleElements.push(action.payload);
+            }
+        },
+        removeVisibleElement: (state, action: PayloadAction<number>) => {
+            state.visibleElements = state.visibleElements.filter(function (e) {
+                return e !== action.payload;
+            });
+        },
         setFeatures: (state, action: PayloadAction<any>) => {
             state.features = action.payload;
         },
@@ -174,6 +194,9 @@ export const {
     setFilterSpace,
     setFilterSpaceDrawing,
     setGeneralNumbers,
+    setLocationData,
+    addVisibleElement,
+    removeVisibleElement,
     setFeatures,
     setSleepCategories,
     setAttribute,

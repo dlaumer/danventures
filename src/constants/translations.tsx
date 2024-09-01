@@ -349,6 +349,13 @@ const translations = {
         pl: 'Autobus',
         de: 'Bus',
     },
+    train: {
+        en: 'Train',
+        es: 'Tren',
+        fr: 'Train',
+        pl: 'Pociąg',
+        de: 'Zug',
+    },
     truck: {
         en: 'Truck',
         es: 'Camión',
@@ -411,6 +418,20 @@ const translations = {
         fr: 'Payé',
         pl: 'Płatny',
         de: 'Bezahlt',
+    },
+    statistics: {
+        en: 'Statistics',
+        es: 'Estatisticas',
+        fr: 'Statistics',
+        pl: '?',
+        de: 'Statistik',
+    },
+    timeline: {
+        en: 'Timeline',
+        es: '??',
+        fr: '??',
+        pl: '?',
+        de: 'Zeitstrahl',
     },
 };
 

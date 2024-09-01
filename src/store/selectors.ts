@@ -64,6 +64,16 @@ export const selectGeneralNumbers = createSelector(
     (generalNumbers) => generalNumbers
 );
 
+export const selectLocationData = createSelector(
+    (state: RootState) => state.App.locationData,
+    (locationData) => locationData
+);
+
+export const selectVisibleElements = createSelector(
+    (state: RootState) => state.App.visibleElements,
+    (visibleElements) => visibleElements
+);
+
 export const selectFeatures = createSelector(
     (state: RootState) => state.App.features,
     (features) => features

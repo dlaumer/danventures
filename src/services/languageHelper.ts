@@ -13,7 +13,9 @@ export function getTranslation(id: string): string {
     if (Object.keys(translations).includes(id)) {
         return (translations as any)[id][language] || '';
     } else {
-        console.log('WARNING: One string is missing: ' + id);
+        if (id != '' && id != ' ') {
+            console.log('WARNING: One string is missing: ' + id);
+        }
         return id;
     }
 }

@@ -33,15 +33,12 @@ const SidePanel: FC<React.ComponentProps<'div'>> = () => {
         <div
             key="sidePanel"
             id="sidePanel"
-            className={`rounded-xl flex flex-col flex-none justify-between z-30 w-1/2  h-full bg-backgroundgray`}
+            className={`rounded-xl flex flex-col flex-none justify-between z-30 w-1/4 h-full`}
         >
             <PanelAnalyze
                 active={sidePanelContent == 'analyze'}
                 title="analyzeTitle"
             ></PanelAnalyze>
-            <div id="filterTime" className={`w-full p-[5px] my-[2.5px]`}>
-                <div id="filterTimeContainer"></div>
-            </div>
         </div>
     );
 };
