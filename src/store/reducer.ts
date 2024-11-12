@@ -43,6 +43,9 @@ export type AppState = {
 
     settingsContent?: string;
     settingsOpen?: boolean;
+
+    locationPanelOpen?: string;
+
 };
 
 export const initialAppState: AppState = {
@@ -85,6 +88,9 @@ export const initialAppState: AppState = {
 
     settingsContent: 'languages',
     settingsOpen: false,
+
+    locationPanelOpen: null,
+
 };
 
 const slice = createSlice({
@@ -174,6 +180,9 @@ const slice = createSlice({
         toggleSettingsOpen: (state) => {
             state.settingsOpen = !state.settingsOpen;
         },
+        setLocationPanelOpen: (state, action: PayloadAction<string>) => {
+            state.locationPanelOpen = action.payload;
+        },
     },
 });
 
@@ -206,6 +215,7 @@ export const {
     setUsernameEsri,
     setSettingsContent,
     toggleSettingsOpen,
+    setLocationPanelOpen
 } = slice.actions;
 
 export default reducer;

@@ -13,6 +13,13 @@ const translations = {
         pl: 'podróż autostopem',
         de: 'Trampen',
     },
+    hitchhike: {
+        en: 'hitchhike',
+        es: 'autostop',
+        fr: 'auto-stop',
+        pl: 'autostopem',
+        de: 'Autostop',
+    },
     en: {
         en: 'English',
         es: 'Inglés',
@@ -355,6 +362,20 @@ const translations = {
         fr: 'Train',
         pl: 'Pociąg',
         de: 'Zug',
+    },
+    taxi: {
+        en: 'Taxi',
+        es: 'Taxi',
+        fr: 'Taxi',
+        pl: 'Taxi',
+        de: 'Taxi',
+    },
+    nights: {
+        en: 'nights',
+        es: 'noches',
+        fr: 'nuits',
+        pl: 'noce',
+        de: 'Nächte',
     },
     truck: {
         en: 'Truck',

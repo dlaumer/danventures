@@ -118,3 +118,8 @@ export const selectSettingsOpen = createSelector(
     (state: RootState) => state.App.settingsOpen,
     (settingsOpen) => settingsOpen
 );
+
+export const selectLocationPanelOpen = createSelector(
+    (state: RootState) => state.App.locationPanelOpen,
+    (locationPanelOpen) => locationPanelOpen
+);

@@ -34,6 +34,7 @@ module.exports = {
         rentalCar: '#FFFF00',
         plane: '#000000',
         train: '#38a800',
+        taxi: '#00e6a9',
 
       },
     },

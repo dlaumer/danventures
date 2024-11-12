@@ -81,6 +81,7 @@ import {
     setGeneralNumbers,
     setIsLoggedIn,
     setLocationData,
+    setLocationPanelOpen,
     setLogInAttempt,
     setSleepCategories,
     setUsernameEsri,
@@ -170,7 +171,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             popupEnabled: false,
             container: mapDivRef.current,
             map: map,
-            center: [-10, 40],
+            center: [-60, -10,],
             zoom: 4,
         });
 
@@ -270,7 +271,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             {
                 name: 'category-travelCost',
                 expression:
-                    "$feature.transport == 'train' || $feature.transport == 'bus' || $feature.transport == 'rentalCar' || $feature.transport == 'ferry' || $feature.transport == 'plane'",
+                    "$feature.transport == 'train' || $feature.transport == 'taxi' || $feature.transport == 'bus' || $feature.transport == 'rentalCar' || $feature.transport == 'ferry' || $feature.transport == 'plane'",
             },
         ];
         const formTemplate = {
@@ -583,30 +584,45 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 const result = response.results[0];
                 if (result.layer.id == tracksLayer.id) {
                     // Check if the clicked point is on the ground surface (elevation) or not
-
                     document
-                        .getElementById(result.graphic.attributes.indexTo)
-                        .scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start',
-                            inline: 'nearest',
-                        });
+                        .getElementById('locationsPanel')
+                        .classList.add('locationsPanelUp');
+                    document
+                        .getElementById('handleLocations')
+                        .classList.add('handleLocationsUp');
+                    dispatch(setLocationPanelOpen(result.graphic.attributes.indexTo))
+                    setTimeout(() => {
+                        document
+                            .getElementById(result.graphic.attributes.indexTo)
+                            .scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                                inline: 'start',
+                            });
+                    }, 100);
+
                 } else if (result.layer.id == sleepsLayer.id) {
                     // Check if the clicked point is on the ground surface (elevation) or not
-
-                    console.log(result.graphic.attributes.travel_date);
                     document
-                        .getElementById(result.graphic.attributes.travel_date)
-                        .scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start',
-                            inline: 'nearest',
-                        });
+                        .getElementById('locationsPanel')
+                        .classList.add('locationsPanelUp');
+                    dispatch(setLocationPanelOpen(result.graphic.attributes.travel_date))
+                    setTimeout(() => {
+                        document
+                            .getElementById(result.graphic.attributes.travel_date)
+                            .scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                                inline: 'start',
+                            });
+                    }, 100);
+
+
                 }
             });
         });
 
-        reactiveUtils.whenOnce(() => !view.updating).then(() => {});
+        reactiveUtils.whenOnce(() => !view.updating).then(() => { });
         // Function block the UI while the map is loading!
     };
 
@@ -780,23 +796,23 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         const numbers: any = {
                             totalDistance: Math.round(
                                 results[0].features[0].attributes['sumLength'] /
-                                    1000
+                                1000
                             ),
                             totalDays:
                                 results[1].features[0].attributes[
-                                    'countSleeps'
+                                'countSleeps'
                                 ],
                             totalRides:
                                 results[2].features[0].attributes[
-                                    'countTransports'
+                                'countTransports'
                                 ],
                             totalTravelDays: uniqueDaysCount,
                             totalCost:
                                 results[4].features[0].attributes[
-                                    'sumTravelCost'
+                                'sumTravelCost'
                                 ] +
                                 results[4].features[0].attributes[
-                                    'sumSleepCost'
+                                'sumSleepCost'
                                 ],
                         };
                         dispatch(setGeneralNumbers(numbers));
@@ -968,8 +984,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                             } else {
                                 alert(
                                     'loading not possible: ' +
-                                        editInfo.addFeatureResults[0].error
-                                            .message
+                                    editInfo.addFeatureResults[0].error
+                                        .message
                                 );
                                 console.error(
                                     editInfo.addFeatureResults[0].error
@@ -1095,9 +1111,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             const newArray = visibleElements.filter(function (value) {
                 return !Number.isNaN(value);
             });
-
+    
             const currentDate = Math.max(...newArray);
-
+    
             
             locations.featureEffect = new FeatureEffect({
                 filter:  new FeatureFilter({
@@ -1113,12 +1129,12 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 
                     //layerView._highlightIds.clear()
                     //layerView.highlight(locationData[currentDate].attributes.OBJECTID);
-
+    
                     
             });
         }
     }, [visibleElements]);
-*/
+    */
 
     useEffect(() => {
         // For some reason it always excecuted this twice, so that's a hacky solution to fix this
@@ -1142,7 +1158,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         if (hoverFeatures == 'paid') {
                             if (attribute == 'transport') {
                                 filter.where =
-                                    "transport = 'bus' OR transport = 'train' OR transport = 'ferry' OR transport = 'train' OR transport = 'rentalCar' OR transport = 'plane'";
+                                    "transport = 'bus' OR transport = 'train' OR transport = 'taxi' OR transport = 'ferry' OR transport = 'rentalCar' OR transport = 'plane'";
                             } else if (attribute == 'sleepCategory') {
                                 filter.where =
                                     "sleepCategory = 'hostel' OR sleepCategory = 'airbnb'";
@@ -1252,13 +1268,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             ></div>
             {mapView
                 ? React.Children.map(children, (child) => {
-                      return React.cloneElement(
-                          child as React.ReactElement<any>,
-                          {
-                              mapView,
-                          }
-                      );
-                  })
+                    return React.cloneElement(
+                        child as React.ReactElement<any>,
+                        {
+                            mapView,
+                        }
+                    );
+                })
                 : null}
         </>
     );
