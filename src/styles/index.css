@@ -60,6 +60,13 @@
 
 @media only screen and (max-width: 600px) {
 
+    #filterChart {
+        overflow: scroll;
+    }
+    #chartsContainer {
+        height: 140%;
+    }
+
     #titleContainer {
         flex-direction: column !important;
     }

@@ -17,8 +17,9 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
-    BarChart,
-    Bar,
+    PieChart,
+    Pie,
+    Cell,
     Rectangle,
 } from 'recharts';
 
@@ -41,10 +42,35 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         parseData(features);
     }, [features]);
 
+    const colors: any = {
+        car: '#73B2FF',
+        truck: '#73DFFF',
+        boat: '#FF7F7F',
+        bus: '#A7C636',
+        train: '#38a800',
+        taxi: '#00e6a9',
+        ferry: '#FFAA00',
+        foot: '#C500FF',
+        rentalCar: '#FFFF00',
+        plane: '#000000',
+        free: '#046c00',
+        paid: '#b50000',
+    };
     const tickFormatter = (value: string, index: number) => {
         const limit = 10; // put your maximum character
         if (value.length < limit) return value;
         return `${value.substring(0, limit)}...`;
+    };
+
+    const CustomTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div style={{ backgroundColor: "#fff", borderRadius: "10px", border: '1px solid #ccc', padding: '10px' }}>
+                    <p>{`${payload[0].name}: ${payload[0].value} ${getTranslationStatic("days")}`}</p>
+                </div>
+            );
+        }
+        return null;
     };
 
     const parseData = (features: any) => {
@@ -87,7 +113,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         setData(dataTemp);
         setTranslations(translationsTemp);
 
-        setDataFinancial([{ paid: paid, free: free, km: free }]);
+        setDataFinancial([{ name: getTranslationStatic("free"), km: free }, { name: getTranslationStatic("paid"), km: paid }]);
     };
 
     return (
@@ -95,26 +121,37 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
             <div className="h-[10%] w-full text-base font-bold flex items-center">
                 {getTranslation('accomodation')}
             </div>
-            <div id="chart3" className="h-[65%] w-full p-[5px]">
+            <div id="chart3" className="h-[90%] w-full p-[5px]">
                 <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            data={data}
+                        <PieChart
                             margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <XAxis
-                                dataKey="name"
-                                tickFormatter={tickFormatter}
-                            />
-                            <Tooltip />
-                            <Bar
-                                dataKey="days"
-                                fill="#FFD37F"
+                                top: 25,
+                                right: 0,
+                                left: 0,
+                                bottom: 25,
+                            }} >
+                            <Tooltip content={<CustomTooltip />} />
+                            <Pie data={dataFinancial} dataKey="km" nameKey="name" cx="50%" cy="50%" outerRadius="50%" fill="#8884d8"
+                                onMouseOver={(event) => {
+                                    dispatch(setAttribute(categories));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
+                                }}
+                                onMouseOut={(event) => {
+                                    dispatch(setHoverFeatures(null));
+                                }}>
+                                {dataFinancial?.map((entry: any, index: any) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={colors[translations[entry.name]]}
+                                    />
+                                ))}
+                            </Pie>
+                            <Pie data={data} dataKey="days" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#FFD37F" label={({ name }) => name} // Custom label function to show "name"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -126,66 +163,11 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                                activeBar={<Rectangle fill="#febc42" />}
-                            />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            </div>
-            <div id="chart4" className="h-[25%] w-full p-[5px]">
-                <div className="w-full h-full bg-lighergray rounded-xl p-[10px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            data={dataFinancial}
-                            layout="vertical"
-                            margin={{
-                                top: 5,
-                                right: 30,
-                                left: -40,
-                                bottom: 5,
-                            }}
-                        >
-                            {' '}
-                            <YAxis
-                                type="category"
-                                axisLine={false}
-                                tick={false}
-                            />
-                            <XAxis type="number" />
-                            <Tooltip />
-                            <Bar
-                                dataKey="free"
-                                fill="#046c00"
-                                stackId="a"
-                                onMouseOver={(event) => {
-                                    dispatch(setAttribute(categories));
-                                    dispatch(
-                                        setHoverFeatures(
-                                            translations[event.name]
-                                        )
-                                    );
-                                }}
-                                onMouseOut={(event) => {
-                                    dispatch(setHoverFeatures(null));
-                                }}
-                            />
-                            <Bar
-                                dataKey="paid"
-                                fill="#b50000"
-                                stackId="a"
-                                onMouseOver={(event) => {
-                                    dispatch(setAttribute(categories));
-                                    dispatch(
-                                        setHoverFeatures(
-                                            translations[event.name]
-                                        )
-                                    );
-                                }}
-                                onMouseOut={(event) => {
-                                    dispatch(setHoverFeatures(null));
-                                }}
-                            />
-                        </BarChart>
+                            >
+
+                            </Pie>
+                        </PieChart>
+
                     </ResponsiveContainer>
                 </div>
             </div>
