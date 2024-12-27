@@ -60,6 +60,11 @@
 
 @media only screen and (max-width: 600px) {
 
+    #timeline {
+        width: 100%;
+        bottom: 0;
+        margin:0
+    }
     #filterChart {
         overflow: scroll;
     }
@@ -81,7 +86,7 @@
 
     #sidePanel {
         width: 100%;
-        height: calc(100% - 180px) !important;
+        height: calc(100% - 240px) !important;
         position: absolute;
         top: 100%;
 
@@ -115,7 +120,7 @@
     #locationsPanel {
         position: absolute;
         width: 100%;
-        height: calc(100% - 40px);
+        height: calc(50% - 60px);
         top: 100%;
     }
 
@@ -126,7 +131,7 @@
     #numbersDashboard {
         display: none;
         position: absolute;
-        bottom: 0px;
+        bottom: 60px;
         z-index: 100;
         background-color: #FFD37F;
         width: 100%;

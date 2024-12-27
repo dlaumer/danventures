@@ -59,7 +59,7 @@ export const initialAppState: AppState = {
     filterSpaceActive: true,
     category: 'bioQuality',
 
-    filterTime: null,
+    filterTime: "all",
     filterTimeStart: null,
     filterTimeEnd: null,
 

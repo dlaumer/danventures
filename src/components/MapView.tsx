@@ -114,6 +114,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
     const locationData = useSelector(selectLocationData);
     const visibleElements = useSelector(selectVisibleElements);
 
+    const filterTime = useSelector(selectFilterTime);
+
     const [locations, setLocations] = useState<FeatureLayer>(null);
     const [sleeps, setSleeps] = useState<FeatureLayer>(null);
     const [tracks, setTracks] = useState<FeatureLayer>(null);
@@ -137,7 +139,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     const actualDate = new Date();
     const fullTimeExtent = new TimeExtent({
-        start: new Date(2023, 1, 1),
+        start: new Date(2023, 3, 1),
         end: actualDate,
     });
 
@@ -171,8 +173,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             popupEnabled: false,
             container: mapDivRef.current,
             map: map,
-            center: [-60, -10,],
-            zoom: 4,
+            center: [-30, 10,],
+            zoom: 3,
         });
 
         const rendererLocations: any = {
@@ -568,7 +570,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryDistances(view, tracksLayer);
             querySleeps(view, locationsLayer);
             queryGeneralNumbers(view, tracksLayer, locationsLayer);
-
             //view.goTo(locationsLayer.fullExtent);
         });
 
@@ -1104,6 +1105,45 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     }, [calculateTracksActive]);
 
+    useEffect(() => {
+        if (mapView != null) {
+            console.log(filterTime)
+            if (filterTime == "all") {
+                timeSlider.timeExtent = fullTimeExtent;
+                mapView.goTo({
+                    center: [-30, 10,],
+                    zoom: 3,
+                }, {easing: "ease-out", duration : 2000});
+            } else if (filterTime == "europe") {
+                timeSlider.timeExtent = new TimeExtent({
+                    start: new Date(2023, 8, 27),
+                    end: new Date(2024, 4, 24),
+                });
+                mapView.goTo({
+                    center:[0, 35,],
+                    zoom: 4,
+                }, {easing: "ease-out", duration : 2000});
+            } else if (filterTime == "switzerland") {
+                timeSlider.timeExtent = new TimeExtent({
+                    start: new Date(2024, 4, 25),
+                    end: new Date(2024, 7, 29),
+                });
+                mapView.goTo({
+                    center:[0, 50,],
+                    zoom: 5,
+                }, {easing: "ease-out", duration : 2000});
+            } else if (filterTime == "southamerica") {
+                timeSlider.timeExtent = new TimeExtent({
+                    start: new Date(2024, 7, 30),
+                    end: new Date(),
+                });
+                mapView.goTo({
+                    center:[-70, 10,],
+                    zoom: 6,
+                }, {easing: "ease-out", duration : 2000});
+            }
+        }
+    }, [filterTime]);
     /*
     useEffect(() => {
         

@@ -454,6 +454,28 @@ const translations = {
         pl: '?',
         de: 'Zeitstrahl',
     },
+    europe: {
+        en: "Europe & Africa",
+        es: "Europa y África",
+        fr: "Europe et Afrique",
+        pl: "Europa i Afryka",
+        de: "Europa und Afrika"
+    },
+    switzerland:{
+        en: "Switzerland",
+        es: "Suiza",
+        fr: "Suisse",
+        pl: "Szwajcaria",
+        de: "Schweiz"
+    },
+    southamerica:{
+        en: "South America",
+        es: "Sudamérica",
+        fr: "Amérique du Sud",
+        pl: "Ameryka Południowa",
+        de: "Südamerika"
+    }
+    
 };
 
 export default translations;

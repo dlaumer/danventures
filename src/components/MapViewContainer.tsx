@@ -8,6 +8,7 @@ import SidePanel from './SidePanel';
 import Settings from './Settings';
 import MobileInfo from './MobileInfo';
 import LocationsPanel from './LocationsPanel';
+import Timeline from './Timeline';
 
 const MapViewContainer = () => {
     return (
@@ -17,6 +18,7 @@ const MapViewContainer = () => {
                 <SidePanel title="chartTitle"></SidePanel>
                 <div id="mapviewContainer" className="w-1/2">
                     <MapView />
+                    <Timeline></Timeline>
                     <div
                         id="filterTime"
                         className={`w-full p-[5px] my-[2.5px] bg-lighergray`}
@@ -30,7 +32,7 @@ const MapViewContainer = () => {
 
             <div
                 id="handleStatistics"
-                className="handle absolute bottom-0 left-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
+                className="handle absolute bottom-[60px] left-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
                 onClick={() => {
                     document
                         .getElementById('sidePanel')
@@ -47,7 +49,7 @@ const MapViewContainer = () => {
             </div>
             <div
                 id="handleLocations"
-                className="handle absolute bottom-0 right-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
+                className="handle absolute bottom-[60px] right-0 h-[40px] w-[48%] bg-mainyellow rounded-t-xl flex items-center justify-center"
                 onClick={() => {
                     document
                         .getElementById('locationsPanel')

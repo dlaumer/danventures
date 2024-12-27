@@ -22,6 +22,7 @@ module.exports = {
         projectgreen: '#A2C367',
         activeBlue: '#6c93ff8b',
         mainyellow: "#FFD37F",
+        mainYellowLighter: "#FFE4A3",
         lighergray: "#f3f3f3",
         bordergrey: "#999999",
         waypoint: "#005CE6",
