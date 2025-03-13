@@ -1138,8 +1138,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     end: new Date(),
                 });
                 mapView.goTo({
-                    center:[-70, 10,],
-                    zoom: 6,
+                    center:[-70, 0,],
+                    zoom:5,
                 }, {easing: "ease-out", duration : 2000});
             }
         }
