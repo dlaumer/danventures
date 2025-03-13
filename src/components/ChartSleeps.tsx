@@ -43,23 +43,15 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     }, [features]);
 
     const colors: any = {
-        car: '#73B2FF',
-        truck: '#73DFFF',
-        boat: '#FF7F7F',
-        bus: '#A7C636',
-        train: '#38a800',
-        taxi: '#00e6a9',
-        ferry: '#FFAA00',
-        foot: '#C500FF',
-        rentalCar: '#FFFF00',
-        plane: '#000000',
+        camping: '#1E3A8A',        // Deep Navy Blue
+        house: '#3B82F6',          // Vibrant Blue
+        boat: '#2563EB',           // Strong Royal Blue
+        couchsurfing: '#1D4ED8',   // Bold Cobalt Blue
+        volunteering: '#0C4A6E',   // Dark Ocean Blue
+        hostel: '#60A5FA',         // Soft Light Blue
+        airbnb: '#1E40AF',         // Classic Indigo Blue
         free: '#046c00',
         paid: '#b50000',
-    };
-    const tickFormatter = (value: string, index: number) => {
-        const limit = 10; // put your maximum character
-        if (value.length < limit) return value;
-        return `${value.substring(0, limit)}...`;
     };
 
     const CustomTooltip = ({ active, payload }: any) => {
@@ -74,7 +66,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     };
 
     const parseData = (features: any) => {
-        const dataTemp = [];
+        let dataTemp: any = {};
         const translationsTemp: any = {};
         translationsTemp[getTranslationStatic('paid')] = 'paid';
         translationsTemp[getTranslationStatic('free')] = 'free';
@@ -89,17 +81,16 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 translationsTemp[
                     getTranslationStatic(features[i].attributes[categories])
                 ] = features[i].attributes[categories];
-                dataTemp.push({
-                    name: getTranslationStatic(
-                        features[i].attributes[categories]
-                    ),
-                    days: features[i].attributes[attribute],
-                });
+                dataTemp[features[i].attributes[categories]] = features[i].attributes[attribute]
+
+
                 if (
                     features[i].attributes[categories] == 'camping' ||
                     features[i].attributes[categories] == 'boat' ||
                     features[i].attributes[categories] == 'house' ||
-                    features[i].attributes[categories] == 'couchsurfing'
+                    features[i].attributes[categories] == 'couchsurfing' ||
+                    features[i].attributes[categories] == 'volunteering'
+
                 ) {
                     free += features[i].attributes[attribute];
                 } else if (
@@ -110,7 +101,23 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 }
             }
         }
-        setData(dataTemp);
+
+
+
+        const predefinedOrder = ["camping",
+            "house",
+            "boat",
+            "couchsurfing",
+            "volunteering",
+            "hostel",
+            "airbnb"]
+
+        let data: any = []
+        // Reorder the data based on predefinedOrder
+        for (let i in predefinedOrder) {
+            data.push({ name: getTranslationStatic(predefinedOrder[i]), days: dataTemp[predefinedOrder[i]] })
+        }
+        setData(data);
         setTranslations(translationsTemp);
 
         setDataFinancial([{ name: getTranslationStatic("free"), km: free }, { name: getTranslationStatic("paid"), km: paid }]);
@@ -151,7 +158,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                     />
                                 ))}
                             </Pie>
-                            <Pie data={data} dataKey="days" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#FFD37F" label={({ name }) => name} // Custom label function to show "name"
+                            <Pie data={data} dataKey="days" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" label={({ name, days }) => name + ", " + days + " nights"} // Custom label function to show "name"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -163,7 +170,12 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
                                 }}
-                            >
+                            > {data?.map((entry: any, index: any) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={colors[translations[entry.name]]}
+                                />
+                            ))}
 
                             </Pie>
                         </PieChart>

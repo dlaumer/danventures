@@ -174,7 +174,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                     />
                                 ))}
                             </Pie>
-                            <Pie data={data} dataKey="km" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#82ca9d" label={({ name }) => name} // Custom label function to show "name"
+                            <Pie data={data} dataKey="km" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#82ca9d" label={({ name, km }) => name + ", " + km + "km"} // Custom label function to show "name"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(

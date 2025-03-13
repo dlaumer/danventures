@@ -139,8 +139,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     const actualDate = new Date();
     const fullTimeExtent = new TimeExtent({
-        start: new Date(2023, 3, 1),
-        end: actualDate,
+        start: new Date(2024, 0, 1),
+        end: new Date(2024, 11, 31),
     });
 
     let isInitalizing = false;
@@ -816,6 +816,12 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                                 'sumSleepCost'
                                 ],
                         };
+                        console.log(results[4].features[0].attributes[
+                            'sumTravelCost'
+                        ])
+                        console.log(results[4].features[0].attributes[
+                            'sumSleepCost'
+                        ])
                         dispatch(setGeneralNumbers(numbers));
                         resolve('Resolved');
                     });
@@ -1113,34 +1119,34 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 mapView.goTo({
                     center: [-30, 10,],
                     zoom: 3,
-                }, {easing: "ease-out", duration : 2000});
+                }, { easing: "ease-out", duration: 2000 });
             } else if (filterTime == "europe") {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2023, 8, 27),
                     end: new Date(2024, 4, 24),
                 });
                 mapView.goTo({
-                    center:[0, 35,],
+                    center: [0, 35,],
                     zoom: 4,
-                }, {easing: "ease-out", duration : 2000});
+                }, { easing: "ease-out", duration: 2000 });
             } else if (filterTime == "switzerland") {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2024, 4, 25),
                     end: new Date(2024, 7, 29),
                 });
                 mapView.goTo({
-                    center:[0, 50,],
+                    center: [0, 50,],
                     zoom: 5,
-                }, {easing: "ease-out", duration : 2000});
+                }, { easing: "ease-out", duration: 2000 });
             } else if (filterTime == "southamerica") {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2024, 7, 30),
                     end: new Date(),
                 });
                 mapView.goTo({
-                    center:[-70, 10,],
+                    center: [-70, 10,],
                     zoom: 6,
-                }, {easing: "ease-out", duration : 2000});
+                }, { easing: "ease-out", duration: 2000 });
             }
         }
     }, [filterTime]);

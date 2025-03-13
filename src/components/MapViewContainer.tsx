@@ -16,7 +16,7 @@ const MapViewContainer = () => {
             <Header></Header>
             <div className="flex w-full h-[calc(100%-60px)]  bg-lighergray">
                 <SidePanel title="chartTitle"></SidePanel>
-                <div id="mapviewContainer" className="w-1/2">
+                <div id="mapviewContainer" className="w-1/4">
                     <MapView />
                     <Timeline></Timeline>
                     <div

@@ -419,6 +419,13 @@ const translations = {
         pl: 'Airbnb',
         de: 'Airbnb',
     },
+    volunteering: {
+        en: "Volunteering/Working",
+        es: "Voluntariado/Trabajo",
+        fr: "Bénévolat/Travail",
+        pl: "Wolontariat/Praca",
+        de: "Freiwilligenarbeit/Arbeit"
+    },
     hostel: {
         en: 'Hostel',
         es: 'Albergue',
@@ -461,21 +468,21 @@ const translations = {
         pl: "Europa i Afryka",
         de: "Europa und Afrika"
     },
-    switzerland:{
+    switzerland: {
         en: "Switzerland",
         es: "Suiza",
         fr: "Suisse",
         pl: "Szwajcaria",
         de: "Schweiz"
     },
-    southamerica:{
+    southamerica: {
         en: "South America",
         es: "Sudamérica",
         fr: "Amérique du Sud",
         pl: "Ameryka Południowa",
         de: "Südamerika"
     }
-    
+
 };
 
 export default translations;
