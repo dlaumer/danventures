@@ -36,7 +36,7 @@ module.exports = {
         plane: '#000000',
         train: '#38a800',
         taxi: '#00e6a9',
-
+        friends: '#73B2FF',
       },
     },
   },

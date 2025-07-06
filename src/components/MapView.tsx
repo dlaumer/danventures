@@ -173,7 +173,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             popupEnabled: false,
             container: mapDivRef.current,
             map: map,
-            center: [-30, 10,],
+            center: [-30, 10],
             zoom: 3,
         });
 
@@ -591,7 +591,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     document
                         .getElementById('handleLocations')
                         .classList.add('handleLocationsUp');
-                    dispatch(setLocationPanelOpen(result.graphic.attributes.indexTo))
+                    dispatch(
+                        setLocationPanelOpen(result.graphic.attributes.indexTo)
+                    );
                     setTimeout(() => {
                         document
                             .getElementById(result.graphic.attributes.indexTo)
@@ -601,29 +603,32 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                                 inline: 'start',
                             });
                     }, 100);
-
                 } else if (result.layer.id == sleepsLayer.id) {
                     // Check if the clicked point is on the ground surface (elevation) or not
                     document
                         .getElementById('locationsPanel')
                         .classList.add('locationsPanelUp');
-                    dispatch(setLocationPanelOpen(result.graphic.attributes.travel_date))
+                    dispatch(
+                        setLocationPanelOpen(
+                            result.graphic.attributes.travel_date
+                        )
+                    );
                     setTimeout(() => {
                         document
-                            .getElementById(result.graphic.attributes.travel_date)
+                            .getElementById(
+                                result.graphic.attributes.travel_date
+                            )
                             .scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'start',
                                 inline: 'start',
                             });
                     }, 100);
-
-
                 }
             });
         });
 
-        reactiveUtils.whenOnce(() => !view.updating).then(() => { });
+        reactiveUtils.whenOnce(() => !view.updating).then(() => {});
         // Function block the UI while the map is loading!
     };
 
@@ -734,7 +739,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     promises.push(queryLayer(locationsLayer, query2));
 
                     const query3: any = {
-                        where: `transport = 'car' OR transport = 'truck' OR transport = 'boat'`,
+                        where: `transport = 'car' OR transport = 'truck' OR transport = 'boat' OR transport = 'friends'`,
                         returnGeometry: false,
                         outStatistics: [
                             {
@@ -797,23 +802,23 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         const numbers: any = {
                             totalDistance: Math.round(
                                 results[0].features[0].attributes['sumLength'] /
-                                1000
+                                    1000
                             ),
                             totalDays:
                                 results[1].features[0].attributes[
-                                'countSleeps'
+                                    'countSleeps'
                                 ],
                             totalRides:
                                 results[2].features[0].attributes[
-                                'countTransports'
+                                    'countTransports'
                                 ],
                             totalTravelDays: uniqueDaysCount,
                             totalCost:
                                 results[4].features[0].attributes[
-                                'sumTravelCost'
+                                    'sumTravelCost'
                                 ] +
                                 results[4].features[0].attributes[
-                                'sumSleepCost'
+                                    'sumSleepCost'
                                 ],
                         };
                         dispatch(setGeneralNumbers(numbers));
@@ -938,7 +943,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryLayer(tracks, query).then((result: any) => {
                 for (const i in result.features) {
                     const date = result.features[i].attributes.indexTo;
-
+                    console.log(date);
                     locData[date]['distance'] = Math.round(
                         result.features[i].attributes['distance'] / 1000
                     );
@@ -985,8 +990,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                             } else {
                                 alert(
                                     'loading not possible: ' +
-                                    editInfo.addFeatureResults[0].error
-                                        .message
+                                        editInfo.addFeatureResults[0].error
+                                            .message
                                 );
                                 console.error(
                                     editInfo.addFeatureResults[0].error
@@ -1061,6 +1066,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     locData[indexNext].attributes.transport == 'car' ||
                     locData[indexNext].attributes.transport == 'truck' ||
                     locData[indexNext].attributes.transport == 'bus' ||
+                    locData[indexNext].attributes.transport == 'friends' ||
                     locData[indexNext].attributes.transport == 'rentalCar'
                 ) {
                     route.solve(routeUrl, routeParams).then((data) => {
@@ -1071,6 +1077,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                             locData[indexNext],
                             routeResult.geometry
                         ).then(() => {
+                            console.log(
+                                JSON.stringify(routeResult.geometry.paths)
+                            );
                             console.log('Track added!');
                         });
                     });
@@ -1107,40 +1116,52 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
     useEffect(() => {
         if (mapView != null) {
-            console.log(filterTime)
-            if (filterTime == "all") {
+            console.log(filterTime);
+            if (filterTime == 'all') {
                 timeSlider.timeExtent = fullTimeExtent;
-                mapView.goTo({
-                    center: [-30, 10,],
-                    zoom: 3,
-                }, {easing: "ease-out", duration : 2000});
-            } else if (filterTime == "europe") {
+                mapView.goTo(
+                    {
+                        center: [-30, 10],
+                        zoom: 3,
+                    },
+                    { easing: 'ease-out', duration: 2000 }
+                );
+            } else if (filterTime == 'europe') {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2023, 8, 27),
                     end: new Date(2024, 4, 24),
                 });
-                mapView.goTo({
-                    center:[0, 35,],
-                    zoom: 4,
-                }, {easing: "ease-out", duration : 2000});
-            } else if (filterTime == "switzerland") {
+                mapView.goTo(
+                    {
+                        center: [0, 35],
+                        zoom: 4,
+                    },
+                    { easing: 'ease-out', duration: 2000 }
+                );
+            } else if (filterTime == 'switzerland') {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2024, 4, 25),
                     end: new Date(2024, 7, 29),
                 });
-                mapView.goTo({
-                    center:[0, 50,],
-                    zoom: 5,
-                }, {easing: "ease-out", duration : 2000});
-            } else if (filterTime == "southamerica") {
+                mapView.goTo(
+                    {
+                        center: [0, 50],
+                        zoom: 5,
+                    },
+                    { easing: 'ease-out', duration: 2000 }
+                );
+            } else if (filterTime == 'southamerica') {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2024, 7, 30),
                     end: new Date(),
                 });
-                mapView.goTo({
-                    center:[-70, 0,],
-                    zoom:5,
-                }, {easing: "ease-out", duration : 2000});
+                mapView.goTo(
+                    {
+                        center: [-70, 0],
+                        zoom: 5,
+                    },
+                    { easing: 'ease-out', duration: 2000 }
+                );
             }
         }
     }, [filterTime]);
@@ -1206,10 +1227,10 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         } else if (hoverFeatures == 'free') {
                             if (attribute == 'transport') {
                                 filter.where =
-                                    "transport = 'car' OR transport = 'truck' OR transport = 'boat'";
+                                    "transport = 'car' OR transport = 'truck' OR transport = 'boat' OR transport = 'friends'";
                             } else if (attribute == 'sleepCategory') {
                                 filter.where =
-                                    "sleepCategory = 'camping' OR sleepCategory = 'boat' OR sleepCategory = 'house' OR sleepCategory = 'couchsurfing'";
+                                    "sleepCategory = 'camping' OR sleepCategory = 'boat' OR sleepCategory = 'house' OR sleepCategory = 'friends' OR sleepCategory = 'couchsurfing'";
                             }
                         } else {
                             filter.where =
@@ -1308,13 +1329,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             ></div>
             {mapView
                 ? React.Children.map(children, (child) => {
-                    return React.cloneElement(
-                        child as React.ReactElement<any>,
-                        {
-                            mapView,
-                        }
-                    );
-                })
+                      return React.cloneElement(
+                          child as React.ReactElement<any>,
+                          {
+                              mapView,
+                          }
+                      );
+                  })
                 : null}
         </>
     );

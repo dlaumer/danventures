@@ -52,6 +52,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
         taxi: '#00e6a9',
         ferry: '#FFAA00',
         rentalCar: '#FFFF00',
+        friends: '#73B2FF',
         free: '#046c00',
         paid: '#b50000',
     };
@@ -65,7 +66,14 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div style={{ backgroundColor: "#fff", borderRadius: "10px", border: '1px solid #ccc', padding: '10px' }}>
+                <div
+                    style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '10px',
+                        border: '1px solid #ccc',
+                        padding: '10px',
+                    }}
+                >
                     <p>{`${payload[0].name}: ${payload[0].value} km`}</p>
                 </div>
             );
@@ -74,7 +82,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
     };
 
     const parseData = (features: any) => {
-        let dataTemp: any = {};
+        const dataTemp: any = {};
         const translationsTemp: any = {};
 
         translationsTemp[getTranslationStatic('paid')] = 'paid';
@@ -91,10 +99,11 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 translationsTemp[
                     getTranslationStatic(features[i].attributes[categories])
                 ] = features[i].attributes[categories];
-                dataTemp[features[i].attributes[categories]] = km
+                dataTemp[features[i].attributes[categories]] = km;
 
                 if (
                     features[i].attributes[categories] == 'car' ||
+                    features[i].attributes[categories] == 'friends' ||
                     features[i].attributes[categories] == 'truck' ||
                     features[i].attributes[categories] == 'boat' ||
                     features[i].attributes[categories] == 'foot'
@@ -113,30 +122,37 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
             }
         }
 
+        const predefinedOrder = [
+            'car',
+            'truck',
+            'friends',
+            'boat',
+            'foot',
+            'plane',
+            'bus',
+            'train',
+            'taxi',
+            'ferry',
+            'rentalCar',
+        ];
 
-        const predefinedOrder = ["car",
-            "truck",
-            "boat",
-            "foot",
-            "plane",
-            "bus",
-            "train",
-            "taxi",
-            "ferry",
-            "rentalCar"]
-
-        let data: any = []
+        const data: any = [];
         // Reorder the data based on predefinedOrder
-        for (let i in predefinedOrder) {
-            data.push({ name: getTranslationStatic(predefinedOrder[i]), km: dataTemp[predefinedOrder[i]] })
+        for (const i in predefinedOrder) {
+            data.push({
+                name: getTranslationStatic(predefinedOrder[i]),
+                km: dataTemp[predefinedOrder[i]],
+            });
         }
 
         setData(data);
         setTranslations(translationsTemp);
 
-        setDataFinancial([{ name: getTranslationStatic("free"), km: free }, { name: getTranslationStatic("paid"), km: paid }]);
+        setDataFinancial([
+            { name: getTranslationStatic('free'), km: free },
+            { name: getTranslationStatic('paid'), km: paid },
+        ]);
     };
-
 
     return (
         <div className="w-full h-full chartsContainer2">
@@ -152,9 +168,17 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 right: 0,
                                 left: 0,
                                 bottom: 25,
-                            }} >
+                            }}
+                        >
                             <Tooltip content={<CustomTooltip />} />
-                            <Pie data={dataFinancial} dataKey="km" nameKey="name" cx="50%" cy="50%" outerRadius="50%" fill="#8884d8"
+                            <Pie
+                                data={dataFinancial}
+                                dataKey="km"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius="50%"
+                                fill="#8884d8"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -165,16 +189,29 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 }}
                                 onMouseOut={(event) => {
                                     dispatch(setHoverFeatures(null));
-                                }}>
-
-                                {dataFinancial?.map((entry: any, index: any) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={colors[translations[entry.name]]}
-                                    />
-                                ))}
+                                }}
+                            >
+                                {dataFinancial?.map(
+                                    (entry: any, index: any) => (
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={
+                                                colors[translations[entry.name]]
+                                            }
+                                        />
+                                    )
+                                )}
                             </Pie>
-                            <Pie data={data} dataKey="km" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#82ca9d" label={({ name }) => name} // Custom label function to show "name"
+                            <Pie
+                                data={data}
+                                dataKey="km"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                innerRadius="60%"
+                                outerRadius="90%"
+                                fill="#82ca9d"
+                                label={({ name }) => name} // Custom label function to show "name"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(

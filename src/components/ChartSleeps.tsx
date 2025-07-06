@@ -53,6 +53,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         foot: '#C500FF',
         rentalCar: '#FFFF00',
         plane: '#000000',
+        friends: '#73B2FF',
         free: '#046c00',
         paid: '#b50000',
     };
@@ -65,8 +66,17 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div style={{ backgroundColor: "#fff", borderRadius: "10px", border: '1px solid #ccc', padding: '10px' }}>
-                    <p>{`${payload[0].name}: ${payload[0].value} ${getTranslationStatic("days")}`}</p>
+                <div
+                    style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '10px',
+                        border: '1px solid #ccc',
+                        padding: '10px',
+                    }}
+                >
+                    <p>{`${payload[0].name}: ${
+                        payload[0].value
+                    } ${getTranslationStatic('days')}`}</p>
                 </div>
             );
         }
@@ -74,7 +84,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
     };
 
     const parseData = (features: any) => {
-        const dataTemp = [];
+        const dataTemp: any = {};
         const translationsTemp: any = {};
         translationsTemp[getTranslationStatic('paid')] = 'paid';
         translationsTemp[getTranslationStatic('free')] = 'free';
@@ -89,16 +99,14 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 translationsTemp[
                     getTranslationStatic(features[i].attributes[categories])
                 ] = features[i].attributes[categories];
-                dataTemp.push({
-                    name: getTranslationStatic(
-                        features[i].attributes[categories]
-                    ),
-                    days: features[i].attributes[attribute],
-                });
+                dataTemp[features[i].attributes[categories]] =
+                    features[i].attributes[attribute];
+
                 if (
                     features[i].attributes[categories] == 'camping' ||
                     features[i].attributes[categories] == 'boat' ||
                     features[i].attributes[categories] == 'house' ||
+                    features[i].attributes[categories] == 'friends' ||
                     features[i].attributes[categories] == 'couchsurfing'
                 ) {
                     free += features[i].attributes[attribute];
@@ -110,10 +118,35 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                 }
             }
         }
-        setData(dataTemp);
+
+        const predefinedOrder = [
+            'camping',
+            'house',
+            'boat',
+            'couchsurfing',
+            'friends',
+            'volunteering',
+            'airbnb',
+            'hostel',
+            'renting',
+        ];
+
+        const data: any = [];
+        // Reorder the data based on predefinedOrder
+        for (const i in predefinedOrder) {
+            data.push({
+                name: getTranslationStatic(predefinedOrder[i]),
+                days: dataTemp[predefinedOrder[i]],
+            });
+        }
+        console.log('data', data);
+        setData(data);
         setTranslations(translationsTemp);
 
-        setDataFinancial([{ name: getTranslationStatic("free"), km: free }, { name: getTranslationStatic("paid"), km: paid }]);
+        setDataFinancial([
+            { name: getTranslationStatic('free'), km: free },
+            { name: getTranslationStatic('paid'), km: paid },
+        ]);
     };
 
     return (
@@ -130,28 +163,17 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                 right: 0,
                                 left: 0,
                                 bottom: 25,
-                            }} >
+                            }}
+                        >
                             <Tooltip content={<CustomTooltip />} />
-                            <Pie data={dataFinancial} dataKey="km" nameKey="name" cx="50%" cy="50%" outerRadius="50%" fill="#8884d8"
-                                onMouseOver={(event) => {
-                                    dispatch(setAttribute(categories));
-                                    dispatch(
-                                        setHoverFeatures(
-                                            translations[event.name]
-                                        )
-                                    );
-                                }}
-                                onMouseOut={(event) => {
-                                    dispatch(setHoverFeatures(null));
-                                }}>
-                                {dataFinancial?.map((entry: any, index: any) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={colors[translations[entry.name]]}
-                                    />
-                                ))}
-                            </Pie>
-                            <Pie data={data} dataKey="days" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" fill="#FFD37F" label={({ name }) => name} // Custom label function to show "name"
+                            <Pie
+                                data={dataFinancial}
+                                dataKey="km"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius="50%"
+                                fill="#8884d8"
                                 onMouseOver={(event) => {
                                     dispatch(setAttribute(categories));
                                     dispatch(
@@ -164,10 +186,40 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                                     dispatch(setHoverFeatures(null));
                                 }}
                             >
-
+                                {dataFinancial?.map(
+                                    (entry: any, index: any) => (
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={
+                                                colors[translations[entry.name]]
+                                            }
+                                        />
+                                    )
+                                )}
                             </Pie>
+                            <Pie
+                                data={data}
+                                dataKey="days"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                innerRadius="60%"
+                                outerRadius="90%"
+                                fill="#FFD37F"
+                                label={({ name }) => name} // Custom label function to show "name"
+                                onMouseOver={(event) => {
+                                    dispatch(setAttribute(categories));
+                                    dispatch(
+                                        setHoverFeatures(
+                                            translations[event.name]
+                                        )
+                                    );
+                                }}
+                                onMouseOut={(event) => {
+                                    dispatch(setHoverFeatures(null));
+                                }}
+                            ></Pie>
                         </PieChart>
-
                     </ResponsiveContainer>
                 </div>
             </div>

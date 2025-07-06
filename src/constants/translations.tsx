@@ -426,6 +426,13 @@ const translations = {
         pl: 'Hostel',
         de: 'Hostel',
     },
+    friends: {
+        en: 'Friends',
+        es: 'Amigos',
+        fr: 'Amis',
+        pl: 'Przyjaciele',
+        de: 'Freunde',
+    },
     free: {
         en: 'Free',
         es: 'Gratis',
@@ -455,27 +462,26 @@ const translations = {
         de: 'Zeitstrahl',
     },
     europe: {
-        en: "Europe & Africa",
-        es: "Europa y África",
-        fr: "Europe et Afrique",
-        pl: "Europa i Afryka",
-        de: "Europa und Afrika"
+        en: 'Europe & Africa',
+        es: 'Europa y África',
+        fr: 'Europe et Afrique',
+        pl: 'Europa i Afryka',
+        de: 'Europa und Afrika',
     },
-    switzerland:{
-        en: "Switzerland",
-        es: "Suiza",
-        fr: "Suisse",
-        pl: "Szwajcaria",
-        de: "Schweiz"
+    switzerland: {
+        en: 'Switzerland',
+        es: 'Suiza',
+        fr: 'Suisse',
+        pl: 'Szwajcaria',
+        de: 'Schweiz',
     },
-    southamerica:{
-        en: "South America",
-        es: "Sudamérica",
-        fr: "Amérique du Sud",
-        pl: "Ameryka Południowa",
-        de: "Südamerika"
-    }
-    
+    southamerica: {
+        en: 'South America',
+        es: 'Sudamérica',
+        fr: 'Amérique du Sud',
+        pl: 'Ameryka Południowa',
+        de: 'Südamerika',
+    },
 };
 
 export default translations;

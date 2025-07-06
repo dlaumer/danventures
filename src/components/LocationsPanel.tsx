@@ -8,7 +8,10 @@ UI for the Header, different buttons, dropdowns and titles
 */
 import { useSelector, useDispatch } from 'react-redux';
 import React, { FC, useEffect, useState } from 'react';
-import { getTranslation, getTranslationStatic } from '../services/languageHelper';
+import {
+    getTranslation,
+    getTranslationStatic,
+} from '../services/languageHelper';
 import PanelAnalyze from './PanelAnalyze';
 import {
     selectLanguage,
@@ -33,10 +36,8 @@ import iconDescription from './../constants/list.svg';
 import iconPeople from './../constants/users.svg';
 import iconTransport from './../constants/git-commit.svg';
 
-
 import SidePanelHeader from './SidePanelHeader';
 import { InView, useInView } from 'react-intersection-observer';
-
 
 const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
     const dispatch = useDispatch();
@@ -60,6 +61,7 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         foot: '#C500FF',
         rentalCar: '#FFFF00',
         plane: '#000000',
+        friends: '#73B2FF',
     };
 
     const { ref, inView } = useInView({
@@ -106,34 +108,45 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                             key={section}
                         >
                             {({ ref }) => {
-                                let attributes = locationData[section].attributes;
+                                const attributes =
+                                    locationData[section].attributes;
                                 return (
                                     <div
                                         className="bg-white"
                                         id={section}
-                                        ref={ref}>
+                                        ref={ref}
+                                    >
                                         <div
-
                                             className={`cursor-pointer relative w-full flex items-center align-center h-[50px]`}
                                             onClick={() => {
-                                                if (locationPanelOpen == section) {
-                                                    dispatch(setLocationPanelOpen(null))
-                                                }
-                                                else {
-                                                    dispatch(setLocationPanelOpen(section))
+                                                if (
+                                                    locationPanelOpen == section
+                                                ) {
+                                                    dispatch(
+                                                        setLocationPanelOpen(
+                                                            null
+                                                        )
+                                                    );
+                                                } else {
+                                                    dispatch(
+                                                        setLocationPanelOpen(
+                                                            section
+                                                        )
+                                                    );
                                                     setTimeout(() => {
                                                         document
-                                                            .getElementById(section)
+                                                            .getElementById(
+                                                                section
+                                                            )
                                                             .scrollIntoView({
-                                                                behavior: 'smooth',
+                                                                behavior:
+                                                                    'smooth',
                                                                 block: 'start',
                                                                 inline: 'start',
                                                             });
                                                     }, 100);
-
                                                 }
                                             }}
-
                                         >
                                             <div className="absolute top-[3px] right-[3px] text-[12px]">
                                                 {new Date(
@@ -142,11 +155,12 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                                             </div>
                                             <div className="flex w-full h-full items-center">
                                                 <div
-                                                    className={`z-50 ${attributes.pointType ==
+                                                    className={`z-50 ${
+                                                        attributes.pointType ==
                                                         'sleep'
-                                                        ? 'w-[20px] h-[20px] rounded-xl m-[9px] bg-mainyellow border-solid border-bordergrey border-[1px]'
-                                                        : 'w-[12px] h-[12px] rounded-xl m-[12px] bg-waypoint border-solid border-bordergrey border-[1px]'
-                                                        } `}
+                                                            ? 'w-[20px] h-[20px] rounded-xl m-[9px] bg-mainyellow border-solid border-bordergrey border-[1px]'
+                                                            : 'w-[12px] h-[12px] rounded-xl m-[12px] bg-waypoint border-solid border-bordergrey border-[1px]'
+                                                    } `}
                                                 ></div>
                                                 <div
                                                     style={{
@@ -154,27 +168,30 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                                                         height: '25px',
                                                         backgroundColor:
                                                             colors[
-                                                            attributes.transport
+                                                                attributes
+                                                                    .transport
                                                             ],
                                                     }}
                                                     className={`z-30 absolute bottom-[0] left-[12px]`}
                                                 ></div>
                                                 <div
-                                                    className={`flex items-center align-center h-full w-[calc(100%-34px)] ${attributes.pointType ==
+                                                    className={`flex items-center align-center h-full w-[calc(100%-34px)] ${
+                                                        attributes.pointType ==
                                                         'sleep'
-                                                        ? 'bg-mainyellow'
-                                                        : 'bg-backgroundgray'
-                                                        } rounded-xl`}
+                                                            ? 'bg-mainyellow'
+                                                            : 'bg-backgroundgray'
+                                                    } rounded-xl`}
                                                 >
-                                                    <div>
-                                                        {
-                                                            attributes.name
-                                                        }
-                                                    </div>
+                                                    <div>{attributes.name}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={`relative w-full flex items-center align-center justify-center ${locationPanelOpen == section ? '' : 'hidden'}`}
+                                        <div
+                                            className={`relative w-full flex items-center align-center justify-center ${
+                                                locationPanelOpen == section
+                                                    ? ''
+                                                    : 'hidden'
+                                            }`}
                                         >
                                             <div
                                                 style={{
@@ -182,79 +199,181 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                                                     height: '100%',
                                                     backgroundColor:
                                                         colors[
-                                                        attributes.transport
+                                                            attributes.transport
                                                         ],
                                                 }}
                                                 className={`z-30 absolute top-0 left-[12px]`}
                                             ></div>
 
-                                            <div className='ml-[35px] w-full'>
-                                                <div className={`flex`}
-                                                >
-                                                    <img src={iconTransport} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
-
+                                            <div className="ml-[35px] w-full">
+                                                <div className={`flex`}>
+                                                    <img
+                                                        src={iconTransport}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.transport == 'car' || attributes.transport == 'boat' || attributes.transport == 'truck' ? getTranslationStatic(attributes.transport) + " (" + getTranslationStatic("hitchhike") + ")" : getTranslationStatic(attributes.transport)
-                                                            }
+                                                            {attributes.transport ==
+                                                                'car' ||
+                                                            attributes.transport ==
+                                                                'friends' ||
+                                                            attributes.transport ==
+                                                                'boat' ||
+                                                            attributes.transport ==
+                                                                'truck'
+                                                                ? getTranslationStatic(
+                                                                      attributes.transport
+                                                                  ) +
+                                                                  ' (' +
+                                                                  getTranslationStatic(
+                                                                      'hitchhike'
+                                                                  ) +
+                                                                  ')'
+                                                                : getTranslationStatic(
+                                                                      attributes.transport
+                                                                  )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className={`flex ${attributes.transport == 'car' || attributes.transport == 'boat' || attributes.transport == 'truck' ? '' : 'hidden'}`}
+                                                <div
+                                                    className={`flex ${
+                                                        attributes.transport ==
+                                                            'car' ||
+                                                        attributes.transport ==
+                                                            'friends' ||
+                                                        attributes.transport ==
+                                                            'boat' ||
+                                                        attributes.transport ==
+                                                            'truck'
+                                                            ? ''
+                                                            : 'hidden'
+                                                    }`}
                                                 >
-                                                    <img src={iconPeople} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
-
+                                                    <img
+                                                        src={iconPeople}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.people
-                                                            }
+                                                            {attributes.people}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className={`flex ${attributes.transport == 'boat' ? '' : 'hidden'}`}>
-                                                    <img src={iconBoat} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
+                                                <div
+                                                    className={`flex ${
+                                                        attributes.transport ==
+                                                        'boat'
+                                                            ? ''
+                                                            : 'hidden'
+                                                    }`}
+                                                >
+                                                    <img
+                                                        src={iconBoat}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
                                                             {attributes.boat}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className='flex'>
-                                                    <img src={attributes.pointType == 'sleep' ? iconLocation : iconDescription} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
-
+                                                <div className="flex">
+                                                    <img
+                                                        src={
+                                                            attributes.pointType ==
+                                                            'sleep'
+                                                                ? iconLocation
+                                                                : iconDescription
+                                                        }
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.description
+                                                            {
+                                                                attributes.description
                                                             }
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className={`flex ${attributes.pointType == 'sleep' ? '' : 'hidden'}`}>
-                                                    <img src={iconNights} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
+                                                <div
+                                                    className={`flex ${
+                                                        attributes.pointType ==
+                                                        'sleep'
+                                                            ? ''
+                                                            : 'hidden'
+                                                    }`}
+                                                >
+                                                    <img
+                                                        src={iconNights}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.noNights + " " + getTranslationStatic("nights")}
+                                                            {attributes.noNights +
+                                                                ' ' +
+                                                                getTranslationStatic(
+                                                                    'nights'
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className={`flex ${attributes.transport == 'train' || attributes.transport == 'taxi' || attributes.transport == 'bus' || attributes.transport == 'rentalCar' || attributes.transport == 'ferry' || attributes.transport == 'plane' ? '' : 'hidden'}`}>
-                                                    <img src={iconCost} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
+                                                <div
+                                                    className={`flex ${
+                                                        attributes.transport ==
+                                                            'train' ||
+                                                        attributes.transport ==
+                                                            'taxi' ||
+                                                        attributes.transport ==
+                                                            'bus' ||
+                                                        attributes.transport ==
+                                                            'rentalCar' ||
+                                                        attributes.transport ==
+                                                            'ferry' ||
+                                                        attributes.transport ==
+                                                            'plane'
+                                                            ? ''
+                                                            : 'hidden'
+                                                    }`}
+                                                >
+                                                    <img
+                                                        src={iconCost}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.travelCost + " " + getTranslationStatic("euros")}
+                                                            {attributes.travelCost +
+                                                                ' ' +
+                                                                getTranslationStatic(
+                                                                    'euros'
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className={`flex ${attributes.sleepCategory == 'hostel' || attributes.sleepCategory == 'airbnb' ? '' : 'hidden'}`}>
-                                                    <img src={iconCost} className="h-[30px] w-[30px] px-[5px]"></img>
-                                                    <div className='flex items-center '>
+                                                <div
+                                                    className={`flex ${
+                                                        attributes.sleepCategory ==
+                                                            'hostel' ||
+                                                        attributes.sleepCategory ==
+                                                            'airbnb'
+                                                            ? ''
+                                                            : 'hidden'
+                                                    }`}
+                                                >
+                                                    <img
+                                                        src={iconCost}
+                                                        className="h-[30px] w-[30px] px-[5px]"
+                                                    ></img>
+                                                    <div className="flex items-center ">
                                                         <div>
-                                                            {attributes.sleepCost + " " + getTranslationStatic("euros")}
+                                                            {attributes.sleepCost +
+                                                                ' ' +
+                                                                getTranslationStatic(
+                                                                    'euros'
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
                                         <div
                                             style={{
@@ -272,15 +391,15 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                                                     height: 'calc(100% + 25px)',
                                                     backgroundColor:
                                                         colors[
-                                                        locationData[
-                                                            section
-                                                        ].attributes
-                                                            .transport
+                                                            locationData[
+                                                                section
+                                                            ].attributes
+                                                                .transport
                                                         ],
                                                 }}
                                                 className={`z-30 absolute bottom-[-25px] left-[12px]`}
                                             ></div>
-                                            <div className='ml-[40px]'>
+                                            <div className="ml-[40px]">
                                                 {locationData[section]
                                                     .distance + ' km'}
                                             </div>
