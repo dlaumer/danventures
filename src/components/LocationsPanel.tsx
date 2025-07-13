@@ -59,6 +59,7 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
         taxi: '#00e6a9',
         ferry: '#FFAA00',
         foot: '#C500FF',
+        bike: '#ff00c5',
         rentalCar: '#FFFF00',
         plane: '#000000',
         friends: '#73B2FF',

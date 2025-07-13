@@ -391,6 +391,13 @@ const translations = {
         pl: 'Pieszo',
         de: 'Fuß',
     },
+    bike: {
+        en: 'Bike',
+        es: 'Bicicleta',
+        fr: 'Vélo',
+        pl: 'Rower',
+        de: 'Fahrrad',
+    },
     camping: {
         en: 'Camping',
         es: 'Camping',

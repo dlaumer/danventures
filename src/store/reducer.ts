@@ -45,7 +45,6 @@ export type AppState = {
     settingsOpen?: boolean;
 
     locationPanelOpen?: string;
-
 };
 
 export const initialAppState: AppState = {
@@ -59,7 +58,7 @@ export const initialAppState: AppState = {
     filterSpaceActive: true,
     category: 'bioQuality',
 
-    filterTime: "all",
+    filterTime: 'all',
     filterTimeStart: null,
     filterTimeEnd: null,
 
@@ -90,7 +89,6 @@ export const initialAppState: AppState = {
     settingsOpen: false,
 
     locationPanelOpen: null,
-
 };
 
 const slice = createSlice({
@@ -215,7 +213,7 @@ export const {
     setUsernameEsri,
     setSettingsContent,
     toggleSettingsOpen,
-    setLocationPanelOpen
+    setLocationPanelOpen,
 } = slice.actions;
 
 export default reducer;

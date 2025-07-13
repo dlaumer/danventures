@@ -66,9 +66,7 @@ const Timeline = () => {
         }
     };
 
-    useEffect(() => {
-
-    }, [language]);
+    useEffect(() => {}, [language]);
     return (
         <div
             id="timeline"
@@ -77,54 +75,65 @@ const Timeline = () => {
             <div
                 id="epochs"
                 className={`rounded-md flex-1 flex justify-center items-center
-                ${(filterTime == "all") ? 'bg-mainyellow' : 'bg-white'}
+                ${filterTime == 'all' ? 'bg-mainyellow' : 'bg-white'}
 
-                `}>
+                `}
+            >
                 <div
                     className={`bg-opacity-0 h-full flex-1 m-2 flex justify-center items-center hover:bg-mainYellowLighter cursor-pointer rounded-md
-                        ${(filterTime == "europe") ? 'bg-mainyellow bg-opacity-100' : 'bg-white'}
+                        ${
+                            filterTime == 'europe'
+                                ? 'bg-mainyellow bg-opacity-100'
+                                : 'bg-white'
+                        }
                     `}
                     onClick={() => {
-                        if (filterTime != "europe") {
-                            dispatch(setFilterTime("europe"))
+                        if (filterTime != 'europe') {
+                            dispatch(setFilterTime('europe'));
+                        } else {
+                            dispatch(setFilterTime('all'));
                         }
-                        else {
-                            dispatch(setFilterTime("all"));
-                        }
-                    }}>
-                    {getTranslation("europe")}
+                    }}
+                >
+                    {getTranslation('europe')}
                 </div>
                 <div
                     className={`bg-opacity-0 h-full flex-1 m-2 flex justify-center items-center hover:bg-mainYellowLighter cursor-pointer rounded-md
-                        ${(filterTime == "switzerland") ? 'bg-mainyellow  bg-opacity-100' : 'bg-white'}
+                        ${
+                            filterTime == 'switzerland'
+                                ? 'bg-mainyellow  bg-opacity-100'
+                                : 'bg-white'
+                        }
                     `}
                     onClick={() => {
-                        if (filterTime != "switzerland") {
-                            dispatch(setFilterTime("switzerland"))
+                        if (filterTime != 'switzerland') {
+                            dispatch(setFilterTime('switzerland'));
+                        } else {
+                            dispatch(setFilterTime('all'));
                         }
-                        else {
-                            dispatch(setFilterTime("all"));
-                        }
-                    }}>
-                    {getTranslation("switzerland")}
+                    }}
+                >
+                    {getTranslation('switzerland')}
                 </div>
                 <div
                     className={`bg-opacity-0 h-full flex-1 m-2 flex justify-center items-center hover:bg-mainYellowLighter cursor-pointer rounded-md
-                        ${(filterTime == "southamerica") ? 'bg-mainyellow bg-opacity-100' : 'bg-white'}
+                        ${
+                            filterTime == 'southamerica'
+                                ? 'bg-mainyellow bg-opacity-100'
+                                : 'bg-white'
+                        }
                     `}
                     onClick={() => {
-                        if (filterTime != "southamerica") {
-                            dispatch(setFilterTime("southamerica"))
+                        if (filterTime != 'southamerica') {
+                            dispatch(setFilterTime('southamerica'));
+                        } else {
+                            dispatch(setFilterTime('all'));
                         }
-                        else {
-                            dispatch(setFilterTime("all"));
-                        }
-                    }}>
-                    {getTranslation("southamerica")}
+                    }}
+                >
+                    {getTranslation('southamerica')}
                 </div>
             </div>
-
-
         </div>
     );
 };

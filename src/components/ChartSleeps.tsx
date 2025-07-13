@@ -53,6 +53,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
         foot: '#C500FF',
         rentalCar: '#FFFF00',
         plane: '#000000',
+        bike: '#ff00c5',
         friends: '#73B2FF',
         free: '#046c00',
         paid: '#b50000',

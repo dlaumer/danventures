@@ -53,6 +53,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
         ferry: '#FFAA00',
         rentalCar: '#FFFF00',
         friends: '#73B2FF',
+        bike: '#ff00c5',
         free: '#046c00',
         paid: '#b50000',
     };
@@ -106,7 +107,8 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     features[i].attributes[categories] == 'friends' ||
                     features[i].attributes[categories] == 'truck' ||
                     features[i].attributes[categories] == 'boat' ||
-                    features[i].attributes[categories] == 'foot'
+                    features[i].attributes[categories] == 'foot' ||
+                    features[i].attributes[categories] == 'bike'
                 ) {
                     free += km;
                 } else if (
@@ -128,6 +130,7 @@ const ChartDistance: FC<ChartProps & React.ComponentProps<'button'>> = ({
             'friends',
             'boat',
             'foot',
+            'bike',
             'plane',
             'bus',
             'train',
