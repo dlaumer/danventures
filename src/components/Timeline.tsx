@@ -133,6 +133,24 @@ const Timeline = () => {
                 >
                     {getTranslation('southamerica')}
                 </div>
+                <div
+                    className={`bg-opacity-0 h-full flex-1 m-2 flex justify-center items-center hover:bg-mainYellowLighter cursor-pointer rounded-md
+                        ${
+                            filterTime == 'europe2'
+                                ? 'bg-mainyellow bg-opacity-100'
+                                : 'bg-white'
+                        }
+                    `}
+                    onClick={() => {
+                        if (filterTime != 'europe2') {
+                            dispatch(setFilterTime('europe2'));
+                        } else {
+                            dispatch(setFilterTime('all'));
+                        }
+                    }}
+                >
+                    {getTranslation('europe2')}
+                </div>
             </div>
         </div>
     );

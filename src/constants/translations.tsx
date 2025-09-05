@@ -482,6 +482,13 @@ const translations = {
         pl: 'Szwajcaria',
         de: 'Schweiz',
     },
+    europe2: {
+        en: 'Europe',
+        es: 'Europa',
+        fr: 'Europe',
+        pl: 'Europa',
+        de: 'Europa',
+    },
     southamerica: {
         en: 'South America',
         es: 'Sudamérica',

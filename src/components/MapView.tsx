@@ -173,7 +173,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             popupEnabled: false,
             container: mapDivRef.current,
             map: map,
-            center: [-30, 10],
+            center: [-30, 25],
             zoom: 3,
         });
 
@@ -354,6 +354,13 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             expressionInfos: categoryExpressionInfos,
         }; // end of form template elements
 
+        const countries = new FeatureLayer({
+            portalItem: {
+                id: '2b93b06dc0dc4e809d3c8db5cb96ba69',
+            },
+            popupEnabled: false,
+        });
+
         const tracksLayer = new FeatureLayer({
             portalItem: {
                 id: tracksId,
@@ -424,11 +431,11 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         view.ui.add(search, 'top-right');
 
+        const editorWidget = new Editor({ view: view });
+
         const editor = new Expand({
             view: view,
-            content: new Editor({
-                view: view,
-            }),
+            content: editorWidget,
             group: 'top-right',
         });
 
@@ -534,8 +541,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         view.when(() => {
             setMapView(view);
-            /*slider.container = 'filterTimeContainer';
 
+            /*slider.container = 'filterTimeContainer';
+    
             slider.when(() => {
                 const timeSliderFooter = document.getElementsByClassName(
                     'esri-time-slider__min'
@@ -554,6 +562,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 queryDistances(view, tracksLayer);
                 querySleeps(view, locationsLayer);
                 queryGeneralNumbers(view, tracksLayer, locationsLayer);
+                queryCountries(view, sleepsLayer, countries);
             };
 
             // Set up a debounced version of your event handler
@@ -570,6 +579,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryDistances(view, tracksLayer);
             querySleeps(view, locationsLayer);
             queryGeneralNumbers(view, tracksLayer, locationsLayer);
+            queryCountries(view, sleepsLayer, countries);
             //view.goTo(locationsLayer.fullExtent);
         });
 
@@ -661,43 +671,99 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         // Return the container element
         return container;
     };
+    // Track cache (module-level)
+    let _trackKeySet: Set<string> | null = null;
+    let _trackCachePromise: Promise<Set<string>> | null = null;
 
-    const checkTracks = (from: string, to: string, view: MapView) => {
-        if (view != null) {
-            const myPromise: Promise<string> = new Promise(
-                (resolve, reject) => {
-                    const query: any = {
-                        //where: `EXTRACT(MONTH FROM ${layer.timeInfo.startField}) = ${month}`,
-                        where:
-                            "indexFrom= '" +
-                            from +
-                            "' AND indexTo= '" +
-                            to +
-                            "'",
-                        returnGeometry: false,
-                        maxRecordCountFactor: 2,
-                        outFields: ['*'],
-                    };
+    const SEP = '→'; // unlikely to appear in your IDs
+    const makeKey = (from: string, to: string) =>
+        `${String(from)}${SEP}${String(to)}`;
 
-                    // Perform the query on the feature layer
-                    tracks
-                        .queryFeatures(query)
-                        .then(function (result: any) {
-                            if (result.features.length > 0) {
-                                console.log('Track exists');
-                            } else {
-                                console.log(`Track does not exist`);
-                                resolve('Resolved');
-                            }
-                        })
-                        .catch(function (error: any) {
-                            console.error(`Query failed: `, error);
-                        });
-                }
-            );
-            return myPromise;
+    /**
+     * Fetch all (indexFrom, indexTo) pairs from the layer, paginated.
+     */
+    async function fetchAllTrackKeys(
+        tracks: __esri.FeatureLayer
+    ): Promise<Set<string>> {
+        const set = new Set<string>();
+        const total = await tracks.queryFeatureCount({ where: '1=1' });
+
+        const res = await tracks.queryFeatures({
+            where: '1=1',
+            outFields: ['indexFrom', 'indexTo'],
+            returnGeometry: false,
+        });
+
+        const { features } = res;
+
+        for (const f of features) {
+            const a = f.attributes as Record<string, any>;
+            if (a.indexFrom != null && a.indexTo != null) {
+                set.add(makeKey(a.indexFrom, a.indexTo));
+            }
         }
-    };
+
+        return set;
+    }
+
+    /**
+     * Ensure the cache is loaded exactly once (dedupes concurrent calls).
+     */
+    async function ensureTrackCache(
+        tracks: __esri.FeatureLayer
+    ): Promise<Set<string>> {
+        if (_trackKeySet) return _trackKeySet;
+        if (!_trackCachePromise) {
+            _trackCachePromise = fetchAllTrackKeys(tracks)
+                .then((set) => {
+                    _trackKeySet = set;
+                    return set;
+                })
+                .finally(() => {
+                    // keep _trackCachePromise null so future ensure calls can reuse the built cache
+                    _trackCachePromise = null;
+                });
+        }
+        return _trackCachePromise;
+    }
+
+    /**
+     * Public API — check if a track exists using the local cache.
+     * Returns true/false and logs like your original.
+     *
+     * NOTE: `view` is not needed anymore, but you can keep it if it’s convenient.
+     */
+    async function checkTracks(
+        from: string,
+        to: string,
+        tracks: __esri.FeatureLayer,
+        _view?: __esri.MapView // kept optional to match your previous call sites
+    ): Promise<boolean> {
+        const cache = await ensureTrackCache(tracks);
+        const exists = cache.has(makeKey(from, to));
+        if (exists) {
+            console.log('Track exists');
+        } else {
+            console.log('Track does not exist');
+        }
+        return exists;
+    }
+
+    /** Optional helper if you want to warm the cache at startup */
+    async function preloadTrackCache(
+        tracks: __esri.FeatureLayer
+    ): Promise<void> {
+        await ensureTrackCache(tracks);
+        console.log('Track cache ready');
+    }
+
+    /** Optional helper to force a refresh later (e.g., after edits) */
+    async function refreshTrackCache(
+        tracks: __esri.FeatureLayer
+    ): Promise<void> {
+        _trackKeySet = null;
+        await preloadTrackCache(tracks);
+    }
 
     const queryGeneralNumbers = (
         view: MapView,
@@ -830,6 +896,66 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
     };
 
+    const queryCountries = (
+        view: MapView,
+        sleepsLayer: FeatureLayer,
+        countries: FeatureLayer
+    ) => {
+        if (view != null) {
+            const myPromise: Promise<string> = new Promise(
+                (resolve, reject) => {
+                    countries
+                        .queryFeatures({
+                            where: '1=1',
+                            outFields: ['COUNTRYAFF'], // Attribut mit dem Ländernamen
+                            returnGeometry: true,
+                        })
+                        .then(({ features: countries }) => {
+                            const results: any = {}; // hier speichern wir { Land: Anzahl }
+                            const countPromises = countries.map((country) => {
+                                // 4. Für jedes Land eine Zähl-Query auf Punkte anlegen
+                                const query = sleepsLayer.createQuery();
+                                query.geometry = country.geometry;
+                                query.spatialRelationship = 'intersects'; // oder "contains"
+                                query.timeExtent = view.timeExtent;
+                                query.outStatistics = [
+                                    {
+                                        statisticType: 'sum',
+                                        onStatisticField: 'noNights',
+                                        outStatisticFieldName: 'sum_noNights',
+                                    },
+                                ] as any;
+                                return sleepsLayer
+                                    .queryFeatures(query)
+                                    .then((result) => {
+                                        const name =
+                                            country.attributes.COUNTRYAFF;
+                                        if (
+                                            result.features[0]?.attributes
+                                                .sum_noNights
+                                        ) {
+                                            if (results[name] === undefined) {
+                                                results[name] = 0;
+                                            }
+                                            results[name] +=
+                                                result.features[0]?.attributes
+                                                    .sum_noNights || 0;
+                                        }
+                                    });
+                            });
+
+                            // 5. Auf alle Abfragen warten und dann ausgeben
+                            Promise.all(countPromises).then(() => {
+                                console.log('Punktzahlen pro Land:', results);
+                                // Optional: in der Map als Popups oder in einer Tabelle anzeigen
+                            });
+                        })
+                        .catch((err) => console.error(err));
+                }
+            );
+            return myPromise;
+        }
+    };
     const queryDistances = (view: MapView, tracksLayer: FeatureLayer) => {
         if (view != null) {
             const myPromise: Promise<string> = new Promise(
@@ -943,7 +1069,6 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             queryLayer(tracks, query).then((result: any) => {
                 for (const i in result.features) {
                     const date = result.features[i].attributes.indexTo;
-                    console.log(date);
                     locData[date]['distance'] = Math.round(
                         result.features[i].attributes['distance'] / 1000
                     );
@@ -1037,16 +1162,19 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         };
     };
 
-    const calculateTracks = (locData: any) => {
+    async function calculateTracks(locData: any): Promise<void> {
         const seq = Object.keys(locData);
         seq.sort((a: any, b: any) => a - b);
         for (let i = 0; i < seq.length - 1; i++) {
             const index = seq[i];
             const indexNext = seq[i + 1];
 
+            const exists = await checkTracks(index, indexNext, tracks);
+
             // Check if this route already exists:
-            checkTracks(index, indexNext, mapView).then(() => {
+            if (!exists) {
                 // Setup the route parameters
+
                 const routeParams = new RouteParameters({
                     // An authorization string used to access the routing service
                     apiKey: 'AAPKea1d57ae3f404aa8a07e1291bd504a2baAvU1yHyJKtH9HXhcBYZiJ02PN-Bn2lBQpZL7YcXwwvXNDOpfLd2MT5M6JmRH05k',
@@ -1069,20 +1197,43 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     locData[indexNext].attributes.transport == 'friends' ||
                     locData[indexNext].attributes.transport == 'rentalCar'
                 ) {
-                    route.solve(routeUrl, routeParams).then((data) => {
-                        const routeResult: any = data.routeResults[0].route;
+                    route
+                        .solve(routeUrl, routeParams)
+                        .then((data) => {
+                            const routeResult: any = data.routeResults[0].route;
 
-                        addTrack(
-                            locData[index],
-                            locData[indexNext],
-                            routeResult.geometry
-                        ).then(() => {
+                            addTrack(
+                                locData[index],
+                                locData[indexNext],
+                                routeResult.geometry
+                            ).then(() => {
+                                console.log(
+                                    JSON.stringify(routeResult.geometry.paths)
+                                );
+                                console.log('Track added!');
+                            });
+                        })
+                        .catch((error) => {
+                            console.error('Error solving route:', error);
+                            console.log(locData[index], locData[indexNext]);
                             console.log(
-                                JSON.stringify(routeResult.geometry.paths)
+                                locData[index].geometry,
+                                locData[indexNext].geometry
                             );
-                            console.log('Track added!');
+                            // If routing fails, add a direct track instead
+                            const directTrack = new Polyline({
+                                paths: [
+                                    [
+                                        locData[index].geometry.longitude,
+                                        locData[index].geometry.latitude,
+                                    ],
+                                    [
+                                        locData[indexNext].geometry.longitude,
+                                        locData[indexNext].geometry.latitude,
+                                    ],
+                                ],
+                            });
                         });
-                    });
                 } else {
                     const directTrack = new Polyline({
                         paths: [
@@ -1104,9 +1255,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                         console.log('Track added!');
                     });
                 }
-            });
+            }
         }
-    };
+    }
 
     useEffect(() => {
         if (calculateTracksActive) {
@@ -1121,7 +1272,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 timeSlider.timeExtent = fullTimeExtent;
                 mapView.goTo(
                     {
-                        center: [-30, 10],
+                        center: [-30, 25],
                         zoom: 3,
                     },
                     { easing: 'ease-out', duration: 2000 }
@@ -1153,12 +1304,24 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             } else if (filterTime == 'southamerica') {
                 timeSlider.timeExtent = new TimeExtent({
                     start: new Date(2024, 7, 30),
+                    end: new Date(2025, 4, 21),
+                });
+                mapView.goTo(
+                    {
+                        center: [-70, -3],
+                        zoom: 5,
+                    },
+                    { easing: 'ease-out', duration: 2000 }
+                );
+            } else if (filterTime == 'europe2') {
+                timeSlider.timeExtent = new TimeExtent({
+                    start: new Date(2025, 4, 23),
                     end: new Date(),
                 });
                 mapView.goTo(
                     {
-                        center: [-70, 0],
-                        zoom: 5,
+                        center: [0, 50],
+                        zoom: 4,
                     },
                     { easing: 'ease-out', duration: 2000 }
                 );
@@ -1172,9 +1335,9 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             const newArray = visibleElements.filter(function (value) {
                 return !Number.isNaN(value);
             });
-    
+     
             const currentDate = Math.max(...newArray);
-    
+     
             
             locations.featureEffect = new FeatureEffect({
                 filter:  new FeatureFilter({
@@ -1190,7 +1353,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                 
                     //layerView._highlightIds.clear()
                     //layerView.highlight(locationData[currentDate].attributes.OBJECTID);
-    
+     
                     
             });
         }
