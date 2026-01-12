@@ -108,12 +108,15 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
                     features[i].attributes[categories] == 'boat' ||
                     features[i].attributes[categories] == 'house' ||
                     features[i].attributes[categories] == 'friends' ||
-                    features[i].attributes[categories] == 'couchsurfing'
+                    features[i].attributes[categories] == 'couchsurfing' ||
+                    features[i].attributes[categories] == 'volunteering'
                 ) {
                     free += features[i].attributes[attribute];
                 } else if (
                     features[i].attributes[categories] == 'airbnb' ||
-                    features[i].attributes[categories] == 'hostel'
+                    features[i].attributes[categories] == 'hostel' ||
+                    features[i].attributes[categories] == 'renting' ||
+                    features[i].attributes[categories] == 'campingPaid'
                 ) {
                     paid += features[i].attributes[attribute];
                 }
@@ -130,6 +133,7 @@ const ChartSleeps: FC<ChartProps & React.ComponentProps<'button'>> = ({
             'airbnb',
             'hostel',
             'renting',
+            'campingPaid',
         ];
 
         const data: any = [];

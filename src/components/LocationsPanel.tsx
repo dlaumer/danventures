@@ -355,6 +355,10 @@ const LocationsPanel: FC<React.ComponentProps<'div'>> = () => {
                                                         attributes.sleepCategory ==
                                                             'hostel' ||
                                                         attributes.sleepCategory ==
+                                                            'campingPaid' ||
+                                                        attributes.sleepCategory ==
+                                                            'renting' ||
+                                                        attributes.sleepCategory ==
                                                             'airbnb'
                                                             ? ''
                                                             : 'hidden'

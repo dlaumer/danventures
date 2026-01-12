@@ -426,6 +426,30 @@ const translations = {
         pl: 'Airbnb',
         de: 'Airbnb',
     },
+    renting: {
+        en: 'Renting',
+        es: 'Alquiler',
+        fr: 'Location',
+        pl: 'Wynajem',
+        de: 'Miete',
+    },
+
+    campingPaid: {
+        en: 'Paid camping',
+        es: 'Camping de pago',
+        fr: 'Camping payant',
+        pl: 'Kemping płatny',
+        de: 'Kostenpflichtiger Campingplatz',
+    },
+
+    volunteering: {
+        en: 'Volunteering',
+        es: 'Voluntariado',
+        fr: 'Bénévolat',
+        pl: 'Wolontariat',
+        de: 'Freiwilligenarbeit',
+    },
+
     hostel: {
         en: 'Hostel',
         es: 'Albergue',

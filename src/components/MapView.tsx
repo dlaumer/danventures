@@ -267,7 +267,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             {
                 name: 'category-sleepCost',
                 expression:
-                    "$feature.sleepCategory == 'hostel' || $feature.sleepCategory == 'airbnb'",
+                    "$feature.sleepCategory == 'hostel' || $feature.sleepCategory == 'campingPaid' || $feature.sleepCategory == 'airbnb' || $feature.sleepCategory == 'renting'",
             },
 
             {
@@ -1385,7 +1385,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                                     "transport = 'bus' OR transport = 'train' OR transport = 'taxi' OR transport = 'ferry' OR transport = 'rentalCar' OR transport = 'plane'";
                             } else if (attribute == 'sleepCategory') {
                                 filter.where =
-                                    "sleepCategory = 'hostel' OR sleepCategory = 'airbnb'";
+                                    "sleepCategory = 'hostel' OR sleepCategory = 'campingPaid' OR sleepCategory = 'airbnb' OR sleepCategory = 'renting'";
                             }
                         } else if (hoverFeatures == 'free') {
                             if (attribute == 'transport') {
@@ -1393,7 +1393,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                                     "transport = 'car' OR transport = 'truck' OR transport = 'boat' OR transport = 'friends'";
                             } else if (attribute == 'sleepCategory') {
                                 filter.where =
-                                    "sleepCategory = 'camping' OR sleepCategory = 'boat' OR sleepCategory = 'house' OR sleepCategory = 'friends' OR sleepCategory = 'couchsurfing'";
+                                    "sleepCategory = 'camping' OR sleepCategory = 'boat' OR sleepCategory = 'house' OR sleepCategory = 'friends' OR sleepCategory = 'couchsurfing' OR sleepCategory = 'volunteering'";
                             }
                         } else {
                             filter.where =
