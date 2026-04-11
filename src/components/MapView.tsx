@@ -509,8 +509,10 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         });
         view.ui.add(elevatonProfile, 'top-right');
 
+        const sliderDiv = document.createElement('div');
+        sliderDiv.style.width = detectMobile() ? '100%' : '700px';
         const slider = new TimeSlider({
-            container: document.createElement('div'),
+            container: sliderDiv,
             view: view,
             fullTimeExtent: fullTimeExtent,
             timeExtent: fullTimeExtent,
@@ -566,7 +568,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             };
 
             // Set up a debounced version of your event handler
-            const debouncedSliderHandler = debounce(handleSliderChange, 500); // Adjust the delay as needed (500 milliseconds in this example)
+            const debouncedSliderHandler = debounce(handleSliderChange, 2000); // Adjust the delay as needed (500 milliseconds in this example)
 
             slider.watch('timeExtent', (value: any) => {
                 // update layer view filter to reflect current timeExtent
@@ -655,6 +657,10 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
 
         // Return the container element
         return container;
+    };
+
+    const detectMobile = () => {
+        return window.innerWidth <= 600;
     };
 
     const setContentInfoTracks = (feature: any) => {
