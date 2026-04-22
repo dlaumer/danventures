@@ -692,12 +692,12 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         tracks: __esri.FeatureLayer
     ): Promise<Set<string>> {
         const set = new Set<string>();
-        const total = await tracks.queryFeatureCount({ where: '1=1' });
 
         const res = await tracks.queryFeatures({
             where: '1=1',
             outFields: ['indexFrom', 'indexTo'],
             returnGeometry: false,
+            maxRecordCountFactor: 3,
         });
 
         const { features } = res;
@@ -710,6 +710,67 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
         }
 
         return set;
+    }
+
+    async function deleteDuplicateTracks(
+        tracks: __esri.FeatureLayer
+    ): Promise<void> {
+        await tracks.load();
+        const objectIdField = tracks.objectIdField || 'OBJECTID';
+        const objectIds = await tracks.queryObjectIds({
+            where: 'indexFrom IS NOT NULL AND indexTo IS NOT NULL',
+        });
+
+        if (objectIds.length === 0) {
+            return;
+        }
+
+        const seen = new Set<string>();
+        const duplicates: Graphic[] = [];
+        const sortedObjectIds = [...objectIds].sort((a, b) => a - b);
+        const chunkSize = 500;
+
+        for (let i = 0; i < sortedObjectIds.length; i += chunkSize) {
+            const objectIdChunk = sortedObjectIds.slice(i, i + chunkSize);
+            const res = await tracks.queryFeatures({
+                where: `${objectIdField} IN (${objectIdChunk.join(',')})`,
+                outFields: [objectIdField, 'indexFrom', 'indexTo'],
+                returnGeometry: false,
+            });
+
+            const features = [...res.features].sort((a, b) => {
+                return (
+                    a.attributes[objectIdField] - b.attributes[objectIdField]
+                );
+            });
+
+            for (const feature of features) {
+                const attributes = feature.attributes as Record<string, any>;
+                const key = makeKey(attributes.indexFrom, attributes.indexTo);
+
+                if (seen.has(key)) {
+                    duplicates.push(
+                        new Graphic({
+                            attributes: {
+                                [objectIdField]: attributes[objectIdField],
+                            },
+                        })
+                    );
+                } else {
+                    seen.add(key);
+                }
+            }
+        }
+
+        if (duplicates.length === 0) {
+            return;
+        }
+
+        await tracks.applyEdits({
+            deleteFeatures: duplicates,
+        });
+        _trackKeySet = null;
+        _trackCachePromise = null;
     }
 
     /**
@@ -1038,7 +1099,7 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
             };
 
             queryLayer(locations, query)
-                .then((result: any) => {
+                .then(async (result: any) => {
                     const locData: any = {};
                     for (const i in result.features) {
                         const date = result.features[i].attributes.travel_date;
@@ -1050,6 +1111,8 @@ const ArcGISMapView: React.FC<Props> = ({ children }: Props) => {
                     queryTracks(view, tracks, locData);
 
                     if (calculateTracksActive) {
+                        //await deleteDuplicateTracks(tracks);
+                        await refreshTrackCache(tracks);
                         calculateTracks(locData);
                         dispatch(setCalculateTracksActive(false));
                     }
